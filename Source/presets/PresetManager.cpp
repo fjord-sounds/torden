@@ -27,6 +27,7 @@ namespace torden
     void PresetManager::loadFavorites()
     {
         favorites.clear();
+        if (ignoreUserPresets) return;
         favorites.addLines (getUserPresetFolder().getChildFile ("favorites.txt").loadFileAsString());
         favorites.removeEmptyStrings();
     }
@@ -125,6 +126,7 @@ namespace torden
 
         for (const auto& f : getUserPresetFolder().findChildFiles (juce::File::findFiles, true, "*.torden"))
         {
+            if (ignoreUserPresets) break;
             Preset p;
             if (parse (f.loadFileAsString(), p))
             {

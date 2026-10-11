@@ -6,6 +6,10 @@ versions follow [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 - 100 new factory presets (160 in total, 16 per category), e.g. Amapiano Log, Rawstyle Venom, Tabla Baya, Earthquake.
 - Product image at the top of the README.
+- Two new categories with 30 presets each, **Pop** and **Tropical** (220 in total): soft, deep four-on-the-floor kicks
+  for verses under soft synths, e.g. Velvet Verse, Pillow Talk, Palm Shade, Driftwood.
+- The save dialog grows with the number of categories.
+- README images refreshed (the browser shows the new Pop category); screenshots ignore user presets.
 - The preset generator scripts are no longer part of the repository; the factory presets ship as `.torden` files.
 
 ## [0.1.0] – first version

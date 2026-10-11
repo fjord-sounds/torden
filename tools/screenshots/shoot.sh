@@ -16,7 +16,7 @@ SHOTS=(
   "fx|fx|Warehouse Rumble|4"
   "mod|mod|Glitch Hit|"
   "step|step|Glitch Hit|"
-  "browser|browser|Granite|"
+  "browser|browser|Velvet Verse|"
 )
 
 for shot in "${SHOTS[@]}"; do

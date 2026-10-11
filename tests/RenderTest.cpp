@@ -419,6 +419,7 @@ static int findPreset (TordenProcessor& proc, const juce::String& name)
 // One hit of a preset (or "init") as a 24-bit WAV
 static int single (const juce::String& presetName, const juce::File& out, int note)
 {
+    torden::PresetManager::ignoreUserPresets = true;
     TordenProcessor proc;
     if (presetName != "init")
     {
@@ -432,14 +433,15 @@ static int single (const juce::String& presetName, const juce::File& out, int no
     return 0;
 }
 
-// One UI screenshot: page = kick|layers|fx|mod|step|browser|about, theme = light|dark
+// One UI screenshot: page = kick|layers|fx|mod|step|browser|about|save, theme = light|dark
 static int takeScreenshot (const juce::String& pageName, const juce::String& presetName, const juce::String& theme,
                            const juce::File& outFile, int fxIndex)
 {
-    static const juce::StringArray pages { "kick", "layers", "fx", "mod", "step", "browser", "about" };
+    static const juce::StringArray pages { "kick", "layers", "fx", "mod", "step", "browser", "about", "save" };
     const int pageIndex = pages.indexOf (pageName);
     if (pageIndex < 0) { printf ("Unknown page: %s\n", pageName.toRawUTF8()); return 1; }
 
+    torden::PresetManager::ignoreUserPresets = true;
     TordenProcessor proc;
     if (presetName != "init")
     {
@@ -459,6 +461,7 @@ static int takeScreenshot (const juce::String& pageName, const juce::String& pre
 
     if (pageIndex == 5)      { view.selectPage (0); view.showBrowser (true); }
     else if (pageIndex == 6) { proc.setRateAndBufferSizeDetails (48000.0, 512); view.selectPage (0); view.showAbout(); }
+    else if (pageIndex == 7) { view.selectPage (0); view.showSaveDialog(); }
     else                     view.selectPage (pageIndex);
     if (pageIndex == 2 && fxIndex >= 0)
         view.getFxPage().selectEffect (fxIndex);

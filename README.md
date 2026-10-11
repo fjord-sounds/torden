@@ -1,12 +1,12 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/hero-dark.webp">
-  <img alt="Torden – a kick drum designer" src="docs/screenshots/hero-light.webp">
+  <img alt="Torden – a kick drum designer" src="docs/screenshots/hero-dark.webp">
 </picture>
 
 # Torden
 
 A kick drum synthesizer for every common DAW – VST3, Audio Unit, LV2 and a standalone app. Four layers whose
-envelopes you draw directly on the waveform of the kick, ten reorderable effects, a step sequencer, and 160 factory
+envelopes you draw directly on the waveform of the kick, ten reorderable effects, a step sequencer, and 220 factory
 presets from techno to taiko. *Torden* is Norwegian for thunder; it is the second instrument from Fjord and shares its
 Scandinavian, minimal interface (light and dark).
 
@@ -153,8 +153,9 @@ the phase scope shows the stereo image with a correlation meter.
 
 ## Presets
 
-160 factory presets in ten categories, sixteen each: **Techno, House, Hardstyle, Trap, Hip-Hop, DnB, Industrial, Minimal,
-Acoustic** (drums modelled from scratch) and **Cinematic**. Every preset sets the layers, all seven envelopes, the
+220 factory presets in twelve categories: sixteen each in **Techno, House, Hardstyle, Trap, Hip-Hop, DnB, Industrial,
+Minimal, Acoustic** (drums modelled from scratch) and **Cinematic**, plus thirty each in **Pop** and **Tropical** – soft,
+deep four-on-the-floor kicks that sit under soft synths in a verse. Every preset sets the layers, all seven envelopes, the
 effect chain, four named macros and a step pattern, and is loudness matched. User presets are saved to
 `~/Music/Fjord/Torden/Presets/<Category>/*.torden` (plain XML) and appear in the browser with tags and favourites.
 
@@ -185,7 +186,7 @@ not click; the step sequencer's timing (four on the floor, ratchets, swing, chan
 sizes; and that presets, project state and undo bring back parameters, envelopes, patterns and the effect order.
 `TORDEN_WAV=1` also writes the renders as WAV files.
 
-More modes: `--single <preset|init> <out.wav> [note]`, `--screenshot <kick|layers|fx|mod|step|browser|about>
+More modes: `--single <preset|init> <out.wav> [note]`, `--screenshot <kick|layers|fx|mod|step|browser|about|save>
 <preset|init> <light|dark> <out.png> [fx index]`, `--loudness <json>`, `--param-info <tsv>`, `--icon <png>`.
 README images: `tools/screenshots/shoot.sh` (page shots, then `hero.mjs` composes the product image with Playwright –
 run `npm install` in `tools/screenshots` once).

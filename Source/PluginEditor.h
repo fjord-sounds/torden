@@ -37,6 +37,7 @@ public:
     void selectPage (int index) { showPage ((Page) juce::jlimit (0, (int) tabNames.size() - 1, index)); }
     void showBrowser (bool shouldShow) { setBrowserVisible (shouldShow); }
     void showAbout() { about.open(); }
+    void showSaveDialog() { saveDialog.open(); }
     void tickAnimations();
     torden::ui::KickPage& getKickPage() { return kickPage; }
     torden::ui::FxPage& getFxPage() { return fxPage; }

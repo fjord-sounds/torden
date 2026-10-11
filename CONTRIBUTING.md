@@ -36,5 +36,6 @@ to the others (about −15 dB RMS over the first 400 ms).
 
 - Keep them focused. Say what changes and why.
 - UI changes: attach screenshots in the light **and** the dark theme (`TordenRenderTest --screenshot …`).
-- Update the README and [CHANGELOG.md](CHANGELOG.md) (section "Unreleased").
+- Update the README and [CHANGELOG.md](CHANGELOG.md) (section "Unreleased"), and refresh the README images
+  (`tools/screenshots/shoot.sh`) when the UI or the presets change.
 - Everything in the repository is English.

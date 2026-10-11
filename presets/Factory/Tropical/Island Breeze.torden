@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TordenPreset name="Island Breeze" category="Tropical" author="Torden" tags="Punchy" macros="Punch,Length,Warmth,Tone" fxOrder="2,0,5,4,3,1,8,7,6,9">
+  <Param id="preset_level" value="-1.37229"/>
+  <Param id="body_level" value="0.8"/>
+  <Param id="body_cutoff" value="2400"/>
+  <Param id="body_tune" value="51.9131"/>
+  <Param id="body_pitch" value="20"/>
+  <Param id="body_ptime" value="1"/>
+  <Param id="click_on" value="1"/>
+  <Param id="click_level" value="0.16"/>
+  <Param id="click_cutoff" value="5000"/>
+  <Param id="click_mode" value="1"/>
+  <Param id="click_pitch" value="2000"/>
+  <Param id="click_color" value="0.3"/>
+  <Param id="mod1_src" value="4"/>
+  <Param id="mod1_dst" value="23"/>
+  <Param id="mod1_amt" value="0.45"/>
+  <Param id="mod2_src" value="5"/>
+  <Param id="mod2_dst" value="3"/>
+  <Param id="mod2_amt" value="0.35"/>
+  <Param id="mod3_src" value="6"/>
+  <Param id="mod3_dst" value="51"/>
+  <Param id="mod3_amt" value="0.5"/>
+  <Param id="mod4_src" value="7"/>
+  <Param id="mod4_dst" value="13"/>
+  <Param id="mod4_amt" value="-0.45"/>
+  <Param id="sat_on" value="1"/>
+  <Param id="sat_mode" value="0"/>
+  <Param id="sat_drive" value="0.2"/>
+  <Param id="sat_tone" value="-0.3"/>
+  <Param id="sat_os" value="1"/>
+  <Param id="sat_mix" value="0.8"/>
+  <Param id="comp_on" value="1"/>
+  <Param id="comp_thresh" value="-18"/>
+  <Param id="comp_ratio" value="2.5"/>
+  <Param id="comp_attack" value="20"/>
+  <Param id="comp_release" value="120"/>
+  <Param id="comp_makeup" value="1"/>
+  <Param id="comp_mix" value="0.6"/>
+  <Param id="comp_hpf" value="20"/>
+  <Param id="eq_on" value="1"/>
+  <Param id="eq_low_freq" value="55"/>
+  <Param id="eq_low_gain" value="1.5"/>
+  <Param id="eq_mid_freq" value="320"/>
+  <Param id="eq_mid_gain" value="-3"/>
+  <Param id="eq_mid_q" value="0.9"/>
+  <Param id="eq_highcut" value="7000"/>
+  <Param id="clip_on" value="1"/>
+  <Param id="clip_mode" value="0"/>
+  <Param id="clip_ceiling" value="-0.3"/>
+  <Envelopes>
+    <Env id="body_amp" points="0.00000:0.0000:0.000 0.00200:1.0000:0.000 0.07200:0.7800:0.350 0.30200:0.0000:0.350"/>
+    <Env id="pitch" points="0.00000:1.0000:0.000 0.08000:0.0000:0.650"/>
+    <Env id="click_amp" points="0.00000:1.0000:0.000 0.01200:0.0000:0.600"/>
+  </Envelopes>
+  <Pattern steps="1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000"/>
+</TordenPreset>

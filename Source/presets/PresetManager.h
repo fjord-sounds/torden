@@ -24,7 +24,11 @@ namespace torden
             "Metallic", "Pitched", "Sub", "Analog", "Lo-Fi", "Wide", "Pattern" };
 
         static inline const juce::StringArray categoryOrder { "Techno", "House", "Hardstyle", "Trap", "Hip-Hop",
-                                                               "DnB", "Industrial", "Minimal", "Acoustic", "Cinematic", "User" };
+                                                               "DnB", "Industrial", "Minimal", "Acoustic", "Cinematic", "Pop",
+                                                               "Tropical", "User" };
+
+        // Screenshots: show only the factory presets, never the user's own presets or favourites.
+        static inline bool ignoreUserPresets = false;
 
         PresetManager (juce::AudioProcessorValueTreeState&, juce::UndoManager* = nullptr);
 

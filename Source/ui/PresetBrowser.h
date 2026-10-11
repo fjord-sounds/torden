@@ -143,7 +143,7 @@ namespace torden::ui
 
             g.setColour (p.textDim);
             drawSpacedText (g, "CATEGORY", chipsLabelArea().toFloat(), 10.0f, juce::Justification::centredLeft, 0.2f);
-            drawSpacedText (g, "TAGS", chipsLabelArea().toFloat().translated (0.0f, 98.0f), 10.0f, juce::Justification::centredLeft, 0.2f);
+            drawSpacedText (g, "TAGS", chipsLabelArea().toFloat().translated (0.0f, (float) (98 + extraChipRows() * 36)), 10.0f, juce::Justification::centredLeft, 0.2f);
 
             for (int i = 0; i < categories().size(); ++i)
             {
@@ -169,7 +169,7 @@ namespace torden::ui
             auto inner = card().reduced (28, 24);
             inner.removeFromTop (58);
             name.setBounds (inner.removeFromTop (40));
-            tags.setBounds (card().reduced (28, 0).withY (card().getY() + 270).withHeight (38));
+            tags.setBounds (card().reduced (28, 0).withY (card().getY() + 270 + extraChipRows() * 36).withHeight (38));
             auto buttons = inner.removeFromBottom (34);
             save.setBounds (buttons.removeFromRight (120));
             buttons.removeFromRight (10);
@@ -198,12 +198,16 @@ namespace torden::ui
             return c;
         }
 
-        juce::Rectangle<int> card() const { return getLocalBounds().withSizeKeepingCentre (520, 400); }
+        static constexpr int perRow = 5;
+        // The card was laid out for two rows of category chips; every further row pushes the tags down.
+        static int extraChipRows() { return juce::jmax (0, (categories().size() + perRow - 1) / perRow - 2); }
+
+        juce::Rectangle<int> card() const { return getLocalBounds().withSizeKeepingCentre (520, 400 + extraChipRows() * 36); }
         juce::Rectangle<int> chipsLabelArea() const { return card().reduced (28, 0).withY (card().getY() + 152).withHeight (18); }
 
         juce::Rectangle<int> chipBounds (int i) const
         {
-            constexpr int perRow = 5, h = 28, gap = 8;
+            constexpr int h = 28, gap = 8;
             const auto area = card().reduced (28, 0);
             const int w = (area.getWidth() - (perRow - 1) * gap) / perRow;
             return { area.getX() + (i % perRow) * (w + gap), card().getY() + 174 + (i / perRow) * (h + gap), w, h };
