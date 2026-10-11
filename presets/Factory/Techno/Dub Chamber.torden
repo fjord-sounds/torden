@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TordenPreset name="Dub Chamber" category="Techno" author="Torden" tags="Roomy,Deep,Wide" macros="Punch,Length,Drive,Tone" fxOrder="2,0,5,4,3,1,8,7,6,9">
+  <Param id="preset_level" value="-0.437485"/>
+  <Param id="body_level" value="0.8"/>
+  <Param id="body_cutoff" value="1200"/>
+  <Param id="body_tune" value="43.6535"/>
+  <Param id="body_harm" value="0.1"/>
+  <Param id="body_pitch" value="22"/>
+  <Param id="body_ptime" value="1.3"/>
+  <Param id="click_on" value="1"/>
+  <Param id="click_level" value="0.15"/>
+  <Param id="click_mode" value="0"/>
+  <Param id="click_pitch" value="1500"/>
+  <Param id="click_color" value="0.7"/>
+  <Param id="mod1_src" value="4"/>
+  <Param id="mod1_dst" value="23"/>
+  <Param id="mod1_amt" value="0.45"/>
+  <Param id="mod2_src" value="5"/>
+  <Param id="mod2_dst" value="3"/>
+  <Param id="mod2_amt" value="0.35"/>
+  <Param id="mod3_src" value="6"/>
+  <Param id="mod3_dst" value="12"/>
+  <Param id="mod3_amt" value="0.6"/>
+  <Param id="mod4_src" value="7"/>
+  <Param id="mod4_dst" value="13"/>
+  <Param id="mod4_amt" value="-0.45"/>
+  <Param id="verb_on" value="1"/>
+  <Param id="verb_mode" value="1"/>
+  <Param id="verb_size" value="0.8"/>
+  <Param id="verb_decay" value="4.5"/>
+  <Param id="verb_damp" value="0.75"/>
+  <Param id="verb_lowcut" value="350"/>
+  <Param id="verb_duck" value="0.5"/>
+  <Param id="verb_mix" value="0.35"/>
+  <Param id="dly_on" value="1"/>
+  <Param id="dly_sync" value="1"/>
+  <Param id="dly_beats" value="9"/>
+  <Param id="dly_fb" value="0.6"/>
+  <Param id="dly_pingpong" value="1"/>
+  <Param id="dly_damp" value="0.75"/>
+  <Param id="dly_lowcut" value="500"/>
+  <Param id="dly_duck" value="0.6"/>
+  <Param id="dly_mix" value="0.2"/>
+  <Param id="chr_on" value="1"/>
+  <Param id="chr_mode" value="0"/>
+  <Param id="chr_rate" value="0.3"/>
+  <Param id="chr_depth" value="0.5"/>
+  <Param id="chr_fb" value="0.2"/>
+  <Param id="chr_mix" value="0.2"/>
+  <Param id="clip_on" value="1"/>
+  <Param id="clip_mode" value="0"/>
+  <Param id="clip_ceiling" value="-0.3"/>
+  <Envelopes>
+    <Env id="body_amp" points="0.00000:1.0000:0.000 0.08000:0.7500:0.350 0.42000:0.0000:0.300"/>
+    <Env id="pitch" points="0.00000:1.0000:0.000 0.08000:0.0000:0.600"/>
+    <Env id="click_amp" points="0.00000:1.0000:0.000 0.01500:0.0000:0.600"/>
+  </Envelopes>
+  <Pattern steps="1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000"/>
+</TordenPreset>

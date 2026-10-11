@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TordenPreset name="Click Minimal" category="Minimal" author="Torden" tags="Short,Clicky,Clean" macros="Punch,Length,Drive,Tone" fxOrder="2,0,5,4,3,1,8,7,6,9">
+  <Param id="preset_level" value="3.74317"/>
+  <Param id="body_level" value="0.7"/>
+  <Param id="body_tune" value="58.2705"/>
+  <Param id="body_pitch" value="18"/>
+  <Param id="body_ptime" value="0.6"/>
+  <Param id="click_level" value="0.4"/>
+  <Param id="click_mode" value="5"/>
+  <Param id="click_pitch" value="3000"/>
+  <Param id="click_color" value="0.1"/>
+  <Param id="mod1_src" value="4"/>
+  <Param id="mod1_dst" value="23"/>
+  <Param id="mod1_amt" value="0.45"/>
+  <Param id="mod2_src" value="5"/>
+  <Param id="mod2_dst" value="3"/>
+  <Param id="mod2_amt" value="0.35"/>
+  <Param id="mod3_src" value="6"/>
+  <Param id="mod3_dst" value="12"/>
+  <Param id="mod3_amt" value="0.6"/>
+  <Param id="mod4_src" value="7"/>
+  <Param id="mod4_dst" value="13"/>
+  <Param id="mod4_amt" value="-0.45"/>
+  <Param id="clip_on" value="1"/>
+  <Param id="clip_mode" value="0"/>
+  <Param id="clip_ceiling" value="-0.3"/>
+  <Envelopes>
+    <Env id="body_amp" points="0.00000:1.0000:0.000 0.03000:0.7000:0.350 0.14000:0.0000:0.450"/>
+    <Env id="pitch" points="0.00000:1.0000:0.000 0.02500:0.0000:0.800"/>
+    <Env id="click_amp" points="0.00000:1.0000:0.000 0.00400:0.0000:0.600"/>
+  </Envelopes>
+  <Pattern steps="1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000"/>
+</TordenPreset>

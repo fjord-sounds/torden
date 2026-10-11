@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or show your music
+    url: https://github.com/fjord-sounds/torden/discussions
+    about: Ask how something works or share what you made with Torden.

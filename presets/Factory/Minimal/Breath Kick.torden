@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TordenPreset name="Breath Kick" category="Minimal" author="Torden" tags="Noisy,Clean" macros="Punch,Length,Drive,Tone" fxOrder="2,0,5,4,3,1,8,7,6,9">
+  <Param id="preset_level" value="0.897841"/>
+  <Param id="body_level" value="0.7"/>
+  <Param id="body_tune" value="46.2493"/>
+  <Param id="body_pitch" value="16"/>
+  <Param id="body_ptime" value="1"/>
+  <Param id="click_on" value="0"/>
+  <Param id="noise_on" value="1"/>
+  <Param id="noise_level" value="0.25"/>
+  <Param id="noise_ftype" value="2"/>
+  <Param id="noise_cutoff" value="1200"/>
+  <Param id="noise_type" value="1"/>
+  <Param id="noise_tune" value="200"/>
+  <Param id="noise_res" value="0.3"/>
+  <Param id="noise_fenv" value="2"/>
+  <Param id="mod1_src" value="4"/>
+  <Param id="mod1_dst" value="23"/>
+  <Param id="mod1_amt" value="0.45"/>
+  <Param id="mod2_src" value="5"/>
+  <Param id="mod2_dst" value="3"/>
+  <Param id="mod2_amt" value="0.35"/>
+  <Param id="mod3_src" value="6"/>
+  <Param id="mod3_dst" value="12"/>
+  <Param id="mod3_amt" value="0.6"/>
+  <Param id="mod4_src" value="7"/>
+  <Param id="mod4_dst" value="13"/>
+  <Param id="mod4_amt" value="-0.45"/>
+  <Param id="clip_on" value="1"/>
+  <Param id="clip_mode" value="0"/>
+  <Param id="clip_ceiling" value="-0.3"/>
+  <Envelopes>
+    <Env id="body_amp" points="0.00000:1.0000:0.000 0.06000:0.7000:0.350 0.25000:0.0000:0.450"/>
+    <Env id="pitch" points="0.00000:1.0000:0.000 0.05000:0.0000:0.600"/>
+    <Env id="noise_amp" points="0.00000:0.3000:0.000 0.03000:1.0000:-0.300 0.18000:0.0000:0.400"/>
+  </Envelopes>
+  <Pattern steps="1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000"/>
+</TordenPreset>

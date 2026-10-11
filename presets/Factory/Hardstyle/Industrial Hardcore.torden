@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TordenPreset name="Industrial Hardcore" category="Hardstyle" author="Torden" tags="Distorted,Metallic" macros="Punch,Length,Drive,Tone" fxOrder="2,0,5,4,3,1,8,7,6,9">
+  <Param id="preset_level" value="1.2917"/>
+  <Param id="drive_env" value="0.6"/>
+  <Param id="body_level" value="0.85"/>
+  <Param id="body_drive" value="0.5"/>
+  <Param id="body_tune" value="69.2957"/>
+  <Param id="body_pitch" value="46"/>
+  <Param id="body_ptime" value="1"/>
+  <Param id="click_level" value="0.4"/>
+  <Param id="click_mode" value="1"/>
+  <Param id="click_pitch" value="3500"/>
+  <Param id="click_color" value="0.7"/>
+  <Param id="noise_on" value="1"/>
+  <Param id="noise_level" value="0.25"/>
+  <Param id="noise_ftype" value="0"/>
+  <Param id="noise_cutoff" value="6000"/>
+  <Param id="noise_type" value="3"/>
+  <Param id="noise_tune" value="260"/>
+  <Param id="noise_res" value="0.9"/>
+  <Param id="noise_fenv" value="0.5"/>
+  <Param id="mod1_src" value="4"/>
+  <Param id="mod1_dst" value="23"/>
+  <Param id="mod1_amt" value="0.45"/>
+  <Param id="mod2_src" value="5"/>
+  <Param id="mod2_dst" value="3"/>
+  <Param id="mod2_amt" value="0.35"/>
+  <Param id="mod3_src" value="6"/>
+  <Param id="mod3_dst" value="51"/>
+  <Param id="mod3_amt" value="0.5"/>
+  <Param id="mod4_src" value="7"/>
+  <Param id="mod4_dst" value="13"/>
+  <Param id="mod4_amt" value="-0.45"/>
+  <Param id="sat_on" value="1"/>
+  <Param id="sat_mode" value="2"/>
+  <Param id="sat_drive" value="0.9"/>
+  <Param id="sat_bias" value="0"/>
+  <Param id="sat_tone" value="0"/>
+  <Param id="sat_os" value="2"/>
+  <Param id="sat_mix" value="1"/>
+  <Param id="sat_out" value="-7"/>
+  <Param id="verb_on" value="1"/>
+  <Param id="verb_mode" value="1"/>
+  <Param id="verb_size" value="0.6"/>
+  <Param id="verb_decay" value="1.5"/>
+  <Param id="verb_damp" value="0.5"/>
+  <Param id="verb_lowcut" value="400"/>
+  <Param id="verb_duck" value="0.3"/>
+  <Param id="verb_mix" value="0.2"/>
+  <Param id="clip_on" value="1"/>
+  <Param id="clip_mode" value="1"/>
+  <Param id="clip_drive" value="6"/>
+  <Param id="clip_ceiling" value="-0.3"/>
+  <Envelopes>
+    <Env id="body_amp" points="0.00000:1.0000:0.000 0.15000:0.8500:0.100 0.32000:0.0000:0.500"/>
+    <Env id="pitch" points="0.00000:1.0000:0.000 0.05000:0.0000:0.850"/>
+    <Env id="click_amp" points="0.00000:1.0000:0.000 0.00800:0.0000:0.600"/>
+    <Env id="noise_amp" points="0.00000:1.0000:0.000 0.02000:0.5000:0.350 0.30000:0.0000:0.450"/>
+  </Envelopes>
+  <Pattern steps="1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000"/>
+</TordenPreset>

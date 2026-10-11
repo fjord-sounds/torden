@@ -1,0 +1,19 @@
+# build output and downloaded dependencies
+build/
+external/JUCE
+
+# local-only AI project notes
+CLAUDE.md
+
+# local-only preset generator
+tools/preset-gen/
+
+# tool dependencies
+node_modules/
+__pycache__/
+
+# OS / editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp

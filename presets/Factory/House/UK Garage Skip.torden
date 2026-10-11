@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TordenPreset name="UK Garage Skip" category="House" author="Torden" tags="Punchy,Pattern" macros="Punch,Length,Drive,Tone" fxOrder="2,0,5,4,3,1,8,7,6,9">
+  <Param id="preset_level" value="0.367989"/>
+  <Param id="body_level" value="0.8"/>
+  <Param id="body_tune" value="48.9994"/>
+  <Param id="body_pitch" value="28"/>
+  <Param id="body_ptime" value="0.8"/>
+  <Param id="click_on" value="1"/>
+  <Param id="click_level" value="0.3"/>
+  <Param id="click_mode" value="4"/>
+  <Param id="click_pitch" value="3500"/>
+  <Param id="click_color" value="0.4"/>
+  <Param id="sub_on" value="1"/>
+  <Param id="sub_level" value="0.3"/>
+  <Param id="sub_wave" value="0"/>
+  <Param id="sub_octave" value="0"/>
+  <Param id="sub_follow" value="0.1"/>
+  <Param id="mod1_src" value="4"/>
+  <Param id="mod1_dst" value="23"/>
+  <Param id="mod1_amt" value="0.45"/>
+  <Param id="mod2_src" value="5"/>
+  <Param id="mod2_dst" value="3"/>
+  <Param id="mod2_amt" value="0.35"/>
+  <Param id="mod3_src" value="6"/>
+  <Param id="mod3_dst" value="12"/>
+  <Param id="mod3_amt" value="0.6"/>
+  <Param id="mod4_src" value="7"/>
+  <Param id="mod4_dst" value="13"/>
+  <Param id="mod4_amt" value="-0.45"/>
+  <Param id="clip_on" value="1"/>
+  <Param id="clip_mode" value="0"/>
+  <Param id="clip_ceiling" value="-0.3"/>
+  <Envelopes>
+    <Env id="body_amp" points="0.00000:1.0000:0.000 0.06000:0.7000:0.350 0.26000:0.0000:0.450"/>
+    <Env id="pitch" points="0.00000:1.0000:0.000 0.05000:0.0000:0.750"/>
+    <Env id="click_amp" points="0.00000:1.0000:0.000 0.00700:0.0000:0.600"/>
+    <Env id="sub_amp" points="0.00000:0.0000:0.000 0.00400:1.0000:0.000 0.04400:0.8500:0.200 0.30400:0.0000:0.350"/>
+  </Envelopes>
+  <Pattern steps="1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000"/>
+</TordenPreset>

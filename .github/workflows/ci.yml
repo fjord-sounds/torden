@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: macOS,   os: macos-latest }
+          - { name: Windows, os: windows-latest }
+          - { name: Linux,   os: ubuntu-latest }
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libx11-dev libxinerama-dev libxext-dev libxrandr-dev libxcursor-dev \
+            libfreetype-dev libfontconfig1-dev libgl1-mesa-dev
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DTORDEN_COPY_PLUGIN=OFF
+
+      - name: Build plugin and test tool
+        run: cmake --build build --config Release --target Torden_All TordenRenderTest -j4
+
+      - name: Offline render test
+        shell: bash
+        run: |
+          TOOL=$(find build -type f -name 'TordenRenderTest*' -perm -u+x ! -name '*.a' | head -n1)
+          "$TOOL" build/renders | tee build/test.log
+          grep -q "ALL PASSED" build/test.log

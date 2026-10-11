@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TordenPreset name="Acid Floor" category="Techno" author="Torden" tags="Tonal,Distorted" macros="Punch,Length,Drive,Tone" fxOrder="2,0,5,4,3,1,8,7,6,9">
+  <Param id="preset_level" value="-1.7407"/>
+  <Param id="body_level" value="0.8"/>
+  <Param id="body_drive" value="0.3"/>
+  <Param id="body_cutoff" value="900"/>
+  <Param id="body_reso" value="0.75"/>
+  <Param id="body_tune" value="55"/>
+  <Param id="body_shape" value="1.6"/>
+  <Param id="body_pitch" value="30"/>
+  <Param id="body_ptime" value="0.9"/>
+  <Param id="click_on" value="1"/>
+  <Param id="click_level" value="0.3"/>
+  <Param id="click_mode" value="4"/>
+  <Param id="click_pitch" value="4000"/>
+  <Param id="click_color" value="0.5"/>
+  <Param id="mod1_src" value="4"/>
+  <Param id="mod1_dst" value="23"/>
+  <Param id="mod1_amt" value="0.45"/>
+  <Param id="mod2_src" value="5"/>
+  <Param id="mod2_dst" value="3"/>
+  <Param id="mod2_amt" value="0.35"/>
+  <Param id="mod3_src" value="6"/>
+  <Param id="mod3_dst" value="51"/>
+  <Param id="mod3_amt" value="0.5"/>
+  <Param id="mod4_src" value="7"/>
+  <Param id="mod4_dst" value="13"/>
+  <Param id="mod4_amt" value="-0.45"/>
+  <Param id="sat_on" value="1"/>
+  <Param id="sat_mode" value="0"/>
+  <Param id="sat_drive" value="0.35"/>
+  <Param id="sat_bias" value="0"/>
+  <Param id="sat_tone" value="0"/>
+  <Param id="sat_os" value="2"/>
+  <Param id="sat_mix" value="1"/>
+  <Param id="sat_out" value="-3"/>
+  <Param id="filt_on" value="1"/>
+  <Param id="filt_type" value="0"/>
+  <Param id="filt_cutoff" value="600"/>
+  <Param id="filt_reso" value="0.65"/>
+  <Param id="filt_env" value="3.5"/>
+  <Param id="filt_decay" value="0.12"/>
+  <Param id="filt_drive" value="0.4"/>
+  <Param id="filt_mix" value="1"/>
+  <Param id="clip_on" value="1"/>
+  <Param id="clip_mode" value="0"/>
+  <Param id="clip_ceiling" value="-0.3"/>
+  <Envelopes>
+    <Env id="body_amp" points="0.00000:1.0000:0.000 0.06000:0.7000:0.350 0.32000:0.0000:0.450"/>
+    <Env id="pitch" points="0.00000:1.0000:0.000 0.06000:0.0000:0.750"/>
+    <Env id="click_amp" points="0.00000:1.0000:0.000 0.00800:0.0000:0.600"/>
+  </Envelopes>
+  <Pattern steps="1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:1.000:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 1:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000 0:0.800:0.00:1:1.000:1.000"/>
+</TordenPreset>
