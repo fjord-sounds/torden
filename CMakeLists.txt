@@ -18,7 +18,7 @@ endif()
 
 # JUCE 8 is not part of this repository. A local checkout in external/JUCE (or -DTORDEN_JUCE_DIR=<path>) is used
 # if present; otherwise the pinned release is downloaded when CMake configures.
-set(TORDEN_JUCE_TAG "8.0.4")
+set(TORDEN_JUCE_TAG "9.0.4")
 set(TORDEN_JUCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/JUCE" CACHE PATH "Local JUCE checkout (optional)")
 if(EXISTS "${TORDEN_JUCE_DIR}/CMakeLists.txt")
     add_subdirectory(${TORDEN_JUCE_DIR} JUCE)
