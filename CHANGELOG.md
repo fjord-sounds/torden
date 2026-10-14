@@ -4,6 +4,8 @@ All notable changes to Torden. The format follows [Keep a Changelog](https://kee
 versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+
+## [0.2.0] – 2026-10-14
 - Built on [fjord-base](https://github.com/fjord-sounds/fjord-base), the code shared by all Fjord plugins: clone it next to
   this repository (or CMake downloads the pinned release). Header, preset bar, browser, controls, theme, the FX page,
   build scripts, CI workflows and the screenshot tooling now come from there.
