@@ -6,7 +6,7 @@
 # Torden
 
 A kick drum synthesizer for every common DAW – VST3, Audio Unit, LV2 and a standalone app. Four layers whose
-envelopes you draw directly on the waveform of the kick, ten reorderable effects, a step sequencer, and 220 factory
+envelopes you draw directly on the waveform of the kick, fifteen reorderable effects, a step sequencer, and 220 factory
 presets from techno to taiko. *Torden* is Norwegian for thunder; it is the second instrument from Fjord and shares its
 Scandinavian, minimal interface (light and dark).
 
@@ -30,7 +30,7 @@ Every sound is synthesized in real time – there are no samples.
 
 ## Lightweight
 
-- **Small**: the VST3 is about 7 MB (macOS universal binary), including all factory presets and the font.
+- **Small**: the VST3 is about 8 MB (macOS universal binary), including all factory presets and the font.
 - **Self-contained**: no sample library, no installer data, no account, no network access.
 - **Calm on the audio thread**: no allocations or locks while rendering; envelopes and patterns reach the audio
   thread through lock-free stores.
@@ -50,6 +50,7 @@ Every sound is synthesized in real time – there are no samples.
   the STEP page's Play button runs the pattern at the internal tempo.
 - **Any block size and sample rate**: oversized host blocks are split internally; tested at 44.1 to 96 kHz.
 - **Presets in the host**: factory presets show up as programs.
+- **Window size**: drag the corner or use *Window size* in the options menu (75–150 %).
 - **Automation**: every knob is a host parameter. Envelope shapes and the step pattern are saved with the project and
   in presets.
 - **Drag to DAW**: drag the *DRAG WAV* tile from the footer onto a track to get the current kick (with effects) as a
@@ -90,9 +91,12 @@ flip, drive and filter. The dot switches a layer on or off, **S** solos it for l
   <img alt="FX page" src="docs/screenshots/fx-light.webp">
 </picture>
 
-Ten effects as tiles – drag them into any order. Every tile shows its effect live: the saturation curve with the
-signal riding on it, the compressor's gain reduction, reverb particles that fade with the decay, echo rings… The
-selected effect opens below with a large graph; the EQ points can be dragged (wheel = Q). The clipper is always last.
+The same FX page as in every Fjord plugin: fifteen effects and the clipper as live tiles in two rows – drag them into
+any order; the clipper is always last. Every tile shows its effect live (the saturation curve with the signal riding on
+it, the compressor's gain reduction, reverb particles that fade with the decay, echo rings …). The selected effect opens
+below with a large graph (the EQ points can be dragged, wheel = Q), its controls and its own presets (at least 40
+each). **FX CHAIN** loads a whole chain (35 factory chains, saved to `~/Music/Fjord/FX Chains`); **Lock FX** keeps the
+effects while you browse sounds.
 
 ### Mod
 
@@ -116,6 +120,14 @@ An optional sequencer: up to 32 steps at 1/8, 1/16 or 1/32 (straight or triplet)
 velocity, pitch (±24 semitones), ratchets (1–4 hits), chance and decay – drawn with the mouse. MIDI notes keep
 working alongside. Presets bring a fitting pattern (switch that off in the preset bar's ··· menu).
 
+### Locks
+
+The padlock in the preset bar keeps parts of the kick while you browse presets: a layer (body, click, sub, noise), the kick
+settings, any of the seven envelopes, the modulation matrix, the macros, the step pattern, the whole effect chain or single
+effects. Small padlocks sit on the layer chips, in the Kick panel, in MACROS, in MODULATION and on the STEP page. Locked
+parts stay exactly as they are when you load another preset – try one effect chain on many kicks, or keep the pattern and
+swap the sound.
+
 ### Footer
 
 **HIT** plays the kick (higher = harder), **A / B** compares two versions, **MUTATE** creates a random variation
@@ -137,19 +149,12 @@ the phase scope shows the stereo image with a correlation meter.
 
 ## Effects
 
-| Effect | Controls |
-|---|---|
-| **Saturation** | Tape, tube, diode, fold, hard, rectify; drive, bias, tilt tone, 1× / 2× / 4× oversampling, output, mix |
-| **Crush** | Bits, downsampling with jitter, mix |
-| **Transient** | Attack and sustain (level independent), speed, output |
-| **Compressor** | Threshold, ratio, attack, release, knee, makeup, sidechain high-pass, parallel mix |
-| **EQ** | 24 dB low cut, low shelf, two bells, high shelf, 24 dB high cut – interactive graph |
-| **Filter** | Ladder or SVF (low / band / high / notch), resonance, drive, an envelope that restarts on every hit |
-| **Reverb** | Room, plate or hall (8-line FDN); size, decay, damping, pre-delay, low cut, width, ducking |
-| **Delay** | Synced or free, ping-pong, damping and low cut in the feedback, ducking |
-| **Motion** | Chorus, phaser or flanger for tails |
-| **Width** | Stereo width with everything below the crossover kept mono |
-| **Clipper** | Soft, hard or tape up to the ceiling (always last) |
+Torden uses the effects of [fjord-base](https://github.com/fjord-sounds/fjord-base), the code all Fjord plugins share:
+Saturation, Lo-Fi, Transient, Compressor, Squash, EQ, Filter, Motion (chorus, ensemble, phaser, flanger, doubler,
+vibrato), Delay, Reverb (room, plate, hall, shimmer, cloud, studio, freeze), Width, Tremolo / Auto-Pan, Frequency
+Shifter, Exciter, Harmonizer and the Clipper. Every effect has at least 40 presets and also exists as a plugin of its
+own ("Fjord Reverb" …). All parameters:
+[fjord-base/docs/effects.md](https://github.com/fjord-sounds/fjord-base/blob/main/docs/effects.md). The filter envelope restarts with every hit.
 
 ## Presets
 
@@ -163,12 +168,15 @@ The factory presets live in [`presets/Factory/`](presets/Factory) and are embedd
 
 ## Building
 
-Requirements: CMake 3.22+, a C++20 compiler. JUCE 8 is downloaded by CMake on the first configure (or put a
-checkout in `external/JUCE`).
+Requirements: CMake 3.22+, a C++20 compiler. Torden is built on [fjord-base](https://github.com/fjord-sounds/fjord-base),
+the code all Fjord plugins share (interface, effects, build helpers): **clone it next to this repository**
+(`git clone https://github.com/fjord-sounds/fjord-base ../fjord-base`) – without it CMake downloads the release pinned in
+`CMakeLists.txt` (`FJORD_BASE_TAG`). JUCE 8 comes through fjord-base (downloaded by CMake, or a checkout in
+`fjord-base/external/JUCE`).
 
 ```bash
 ./build.sh                                     # macOS: AU + VST3 + Standalone, installs them, runs auval
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DTORDEN_COPY_PLUGIN=OFF && cmake --build build -j8   # elsewhere
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DFJORD_COPY_PLUGIN=OFF && cmake --build build -j8   # elsewhere
 ```
 
 ## Tests
@@ -193,5 +201,5 @@ run `npm install` in `tools/screenshots` once).
 
 ## Licences
 
-Torden is licensed under the [AGPL-3.0](LICENSE). It uses JUCE (AGPLv3) and the Manrope font (SIL Open Font
+Torden is licensed under the [AGPL-3.0](LICENSE). It is built on fjord-base (AGPL-3.0) and uses JUCE (AGPLv3) and the Manrope font (SIL Open Font
 License) – see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

@@ -4,6 +4,35 @@
 
 namespace P = torden::params;
 
+// Torden inside the family design: thunderstorm amber, the storm gradient (amber -> lightning white -> storm blue).
+const fjord::base::Brand& fjord::base::brand()
+{
+    static const Brand b = []
+    {
+        Brand x;
+        x.name = "Torden";
+        x.logo = "torden";
+        x.tagline = "KICK DESIGNER";
+        x.githubUrl = "https://github.com/fjord-sounds/torden";
+        x.settingsFolder = "Fjord/Torden";
+        x.userPresetFolder = "Fjord/Torden/Presets";
+        x.light = familyLight (juce::Colour (0xffa8650a));   // deep amber
+        x.dark = familyDark (juce::Colour (0xfff2b544));     // lightning amber
+        x.gradientDark = { juce::Colour (0xfff2b544), juce::Colour (0xfff6e7c1), juce::Colour (0xff5b8fe6) };
+        x.gradientLight = { juce::Colour (0xffb8700c), juce::Colour (0xffc9933a), juce::Colour (0xff2f68b0) };
+        x.glow = { juce::Colour (0xfff2b544), juce::Colour (0xffe8a04a), juce::Colour (0xff5b8fe6) };
+        x.glowDark = 0.14f;
+        x.glowLight = 0.09f;
+        x.flash = juce::Colour (0xfff6e7c1);
+        x.categories = { "Techno", "House", "Hardstyle", "Trap", "Hip-Hop", "DnB", "Industrial", "Minimal", "Acoustic",
+                         "Cinematic", "Pop", "Tropical" };
+        x.tags = { "Punchy", "Deep", "Long", "Short", "Tonal", "Clicky", "Distorted", "Clean", "Roomy", "Noisy",
+                   "Metallic", "Pitched", "Sub", "Analog", "Lo-Fi", "Wide", "Pattern" };
+        return x;
+    }();
+    return b;
+}
+
 TordenProcessor::TordenProcessor()
     : AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
       apvts (*this, &undoManager, "TordenState", P::createLayout())
@@ -11,16 +40,16 @@ TordenProcessor::TordenProcessor()
     P::modTargets();   // build the static tables here, never on the audio thread
     torden::SoundState::ensureChildren (apvts.state);
     sound.syncAll();
-    if (! apvts.state.hasProperty ("fxOrder"))
-        apvts.state.setProperty ("fxOrder", torden::fx::orderToString (torden::fx::defaultOrder()), nullptr);
-    apvts.state.addListener (this);
-    syncFxOrderFromState();
 }
 
-TordenProcessor::~TordenProcessor()
+namespace
 {
-    apvts.state.removeListener (this);
+    // Version of the saved project state (not the plugin version). Raise it when a change needs the old state
+    // to be converted (fjord-base/source/fjord_base/presets/Migration.h helps), and convert it in setStateInformation.
+    constexpr int kStateVersion = 1;
 }
+
+TordenProcessor::~TordenProcessor() = default;
 
 void TordenProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
@@ -28,6 +57,7 @@ void TordenProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     maxBlockSize = std::max (16, samplesPerBlock);
     engine.prepare (sampleRate);
     fxChain.prepare (sampleRate, maxBlockSize);
+    splitter.prepare (maxBlockSize);
     sequencer.reset();
     scope.sampleRate.store (sampleRate);
     masterGain.reset (sampleRate, 0.02);
@@ -64,35 +94,14 @@ void TordenProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         fxChain.reset();
     }
 
-    double ppq = 0.0, tempo = 120.0;
-    bool playing = false;
-    if (auto* head = getPlayHead())
-        if (auto pos = head->getPosition())
-        {
-            playing = pos->getIsPlaying();
-            tempo = pos->getBpm().orFallback (0.0);
-            ppq = pos->getPpqPosition().orFallback (0.0);
-        }
-    hostPlaying.store (playing);
-    if (! (tempo > 1.0 && tempo < 2000.0))
-        tempo = apvts.getRawParameterValue (P::paramId (P::SeqBpm))->load();
-    bpm.store (tempo);
+    const auto transport = fjord::base::plugin::Transport::read (*this, apvts.getRawParameterValue (P::paramId (P::SeqBpm))->load());
+    hostPlaying.store (transport.playing);
+    bpm.store (transport.bpm);
 
-    const int total = buffer.getNumSamples();
-    if (total <= maxBlockSize)
-        return processChunk (buffer, midi, ppq, playing);
-
-    for (int start = 0; start < total; start += maxBlockSize)
+    splitter.process (buffer, midi, [&] (juce::AudioBuffer<float>& part, juce::MidiBuffer& partMidi, int offset)
     {
-        const int n = std::min (maxBlockSize, total - start);
-        juce::AudioBuffer<float> part (buffer.getArrayOfWritePointers(), buffer.getNumChannels(), start, n);
-        juce::MidiBuffer partMidi;
-        for (const auto meta : midi)
-            if (meta.samplePosition >= start && meta.samplePosition < start + n)
-                partMidi.addEvent (meta.getMessage(), meta.samplePosition - start);
-        processChunk (part, partMidi, ppq + tempo / 60.0 * start / currentSampleRate, playing);
-    }
-    midi.clear();
+        processChunk (part, partMidi, transport.ppq + transport.bpm / 60.0 * offset / currentSampleRate, transport.playing);
+    });
 }
 
 void TordenProcessor::processChunk (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi, double ppq, bool playing)
@@ -163,10 +172,13 @@ void TordenProcessor::processChunk (juce::AudioBuffer<float>& buffer, juce::Midi
 
     std::array<int, kMaxEvents> hitPositions {};
     for (int i = 0; i < numEvents; ++i) hitPositions[(size_t) i] = events[(size_t) i].sample;
-    torden::fx::Order order;
-    for (size_t i = 0; i < order.size(); ++i)
-        order[i] = fxOrder[i].load (std::memory_order_relaxed);
-    fxChain.process ({ l, r, n }, engine.liveValues(), order, bpm.load(), hitPositions.data(), numEvents, &fxMeters);
+    fjord::base::fx::Context ctx;
+    ctx.bpm = bpm.load();
+    ctx.ppq = ppq;
+    ctx.playing = playing;
+    ctx.triggers = hitPositions.data();
+    ctx.numTriggers = numEvents;
+    fxChain.process ({ l, r, n }, P::fxValues (engine.liveValues()), fxOrder.get(), ctx, &fxMeters);
 
     masterGain.setTargetValue (juce::Decibels::decibelsToGain (values[P::MasterGain]));
     masterGain.applyGain (buffer, n);
@@ -187,47 +199,15 @@ void TordenProcessor::processChunk (juce::AudioBuffer<float>& buffer, juce::Midi
 
     scope.push (l, r, n);
 
-    for (int ch = 0; ch < 2; ++ch)
-    {
-        const float peak = buffer.getMagnitude (ch, 0, n);
-        auto& slot = outputPeak[(size_t) ch];
-        float prev = slot.load (std::memory_order_relaxed);
-        while (peak > prev && ! slot.compare_exchange_weak (prev, peak, std::memory_order_relaxed)) {}
-    }
+    outputPeaks.push (buffer, 0, n);
 }
 
 torden::params::Values TordenProcessor::currentValues() const
 {
     P::Values v;
     for (const auto& s : P::specs())
-        v[s.id] = apvts.getRawParameterValue (s.paramId)->load();
+        v.v[(size_t) s.id] = apvts.getRawParameterValue (s.paramId)->load();
     return v;
-}
-
-torden::fx::Order TordenProcessor::getFxOrder() const
-{
-    torden::fx::Order o;
-    for (size_t i = 0; i < o.size(); ++i)
-        o[i] = fxOrder[i].load();
-    return o;
-}
-
-void TordenProcessor::setFxOrder (const torden::fx::Order& o)
-{
-    apvts.state.setProperty ("fxOrder", torden::fx::orderToString (o), &undoManager);
-}
-
-void TordenProcessor::syncFxOrderFromState()
-{
-    const auto o = torden::fx::orderFromString (apvts.state.getProperty ("fxOrder").toString());
-    for (size_t i = 0; i < o.size(); ++i)
-        fxOrder[i].store (o[i]);
-}
-
-void TordenProcessor::valueTreePropertyChanged (juce::ValueTree& tree, const juce::Identifier& id)
-{
-    if (tree == apvts.state && id == juce::Identifier ("fxOrder"))
-        syncFxOrderFromState();
 }
 
 void TordenProcessor::storeSnapshot (int slot)
@@ -272,86 +252,18 @@ const juce::String TordenProcessor::getProgramName (int index)
 
 juce::String TordenProcessor::getDebugReport() const
 {
-   #ifdef JucePlugin_VersionString
-    juce::String version = JucePlugin_VersionString;
-   #else
-    juce::String version = "dev";
-   #endif
-   #if JUCE_ARM
-    const juce::String arch = "arm64";
-   #elif JUCE_64BIT
-    const juce::String arch = "x86_64";
-   #else
-    const juce::String arch = "32-bit";
-   #endif
-
-    juce::StringArray lines;
-    const auto home = juce::File::getSpecialLocation (juce::File::userHomeDirectory).getFullPathName();
-    auto add = [&] (const juce::String& key, const juce::String& value)
-    {
-        lines.add (key.paddedRight (' ', 16) + (home.length() > 1 ? value.replace (home, "~") : value));
-    };
-
-    lines.add ("Torden debug info");
-    lines.add ("-----------------");
-   #ifdef TORDEN_GIT_HASH
-    const juce::String build = juce::String (TORDEN_GIT_HASH) + ", ";
-   #else
-    const juce::String build;
-   #endif
-    add ("Version", version + " (" + build + arch + ", built " + __DATE__ + ")");
-    add ("Format", juce::AudioProcessor::getWrapperTypeDescription (wrapperType));
-    add ("Host", juce::PluginHostType().getHostDescription());
-    add ("Plugin", juce::File::getSpecialLocation (juce::File::currentApplicationFile).getFullPathName());
-    add ("User presets", torden::PresetManager::getUserPresetFolder().getFullPathName());
-    add ("Settings", torden::ui::Theme::get().getSettingsFile().getFullPathName());
-    add ("Sample rate", juce::String (getSampleRate(), 0) + " Hz, block " + juce::String (getBlockSize())
-                        + " (prepared " + juce::String (maxBlockSize) + ")");
-    add ("OS", juce::SystemStats::getOperatingSystemName() + (juce::SystemStats::isOperatingSystem64Bit() ? " 64-bit" : ""));
-    add ("CPU", juce::SystemStats::getCpuModel().trim() + ", " + juce::String (juce::SystemStats::getNumCpus()) + " cores");
-    add ("JUCE", juce::SystemStats::getJUCEVersion());
-    add ("Theme / scale", juce::String (torden::ui::Theme::get().isDark() ? "dark" : "light") + ", "
-                          + juce::String (juce::roundToInt (torden::ui::Theme::get().getScale() * 100.0f)) + " %");
-
-    int factory = 0, user = 0;
-    for (const auto& p : presetManager.getPresets())
-        (p.isFactory ? factory : user)++;
-    add ("Presets", juce::String (factory) + " factory, " + juce::String (user) + " user");
-    add ("Preset", presetManager.getCurrentName() + " (" + presetManager.getCurrentCategory() + ")");
-    add ("FX order", apvts.state.getProperty ("fxOrder").toString());
-
-    juce::StringArray changed;
-    for (auto* p : getParameters())
-        if (auto* rp = dynamic_cast<juce::RangedAudioParameter*> (p))
-            if (std::abs (rp->getValue() - rp->getDefaultValue()) > 1.0e-5f)
-                changed.add (rp->getParameterID() + "=" + juce::String (rp->convertFrom0to1 (rp->getValue()), 4));
-    lines.add ("");
-    lines.add ("Changed parameters (" + juce::String (changed.size()) + "):");
-    lines.add (changed.joinIntoString (" "));
-    lines.add ("Envelopes:");
+    fjord::base::plugin::DebugReport report (*this, const_cast<torden::PresetManager*> (&presetManager), maxBlockSize);
+    report.add ("FX order", apvts.state.getProperty ("fxOrder").toString());
+    juce::StringArray envelopes { "Envelopes:" };
     for (int i = 0; i < torden::dsp::kNumEnvs; ++i)
-        lines.add (juce::String ("  ") + torden::dsp::envName ((torden::dsp::Env) i) + " "
-                   + sound.getEnv ((torden::dsp::Env) i).toString());
-    return lines.joinIntoString ("\n");
+        envelopes.add (juce::String ("  ") + torden::dsp::envName ((torden::dsp::Env) i) + " "
+                       + sound.getEnv ((torden::dsp::Env) i).toString());
+    return report.finish (envelopes);
 }
 
 juce::AudioProcessorEditor* TordenProcessor::createEditor()
 {
     return new TordenEditor (*this);
-}
-
-namespace
-{
-    // Version of the saved project state (not the plugin version). Raise it when a change needs the old state
-    // to be converted, and add the conversion to migrateState().
-    constexpr int kStateVersion = 1;
-
-    void migrateState (juce::ValueTree& state)
-    {
-        const int saved = state.getProperty ("stateVersion", 0);
-        juce::ignoreUnused (saved);
-        state.setProperty ("stateVersion", kStateVersion, nullptr);
-    }
 }
 
 void TordenProcessor::getStateInformation (juce::MemoryBlock& dest)
@@ -370,10 +282,9 @@ void TordenProcessor::setStateInformation (const void* data, int size)
             auto tree = juce::ValueTree::fromXml (*xml);
             torden::SoundState::ensureChildren (tree);
             apvts.replaceState (tree);
-            migrateState (apvts.state);
             sound.syncAll();
             presetManager.restoreFromState();
-            syncFxOrderFromState();
+            fxOrder.sync();
             undoManager.clearUndoHistory();
 
             if (apvts.state.hasProperty ("darkTheme"))

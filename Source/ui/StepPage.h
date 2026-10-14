@@ -1,4 +1,5 @@
 #pragma once
+#include "../presets/Locks.h"
 #include "LayerControls.h"
 
 namespace torden::ui
@@ -317,10 +318,11 @@ namespace torden::ui
               length (p.apvts, P::paramId (P::SeqLength), "Steps"),
               swing (p.apvts, P::paramId (P::SeqSwing), "Swing"),
               tempo (p.apvts, P::paramId (P::SeqBpm), "Tempo"),
+              lock (p.apvts, locks::set(), locks::ids().step, false),
               clear ("Clear"), four ("4 / 4"), offbeat ("Broken"), random ("Random"), left (utf8 ("\xe2\x86\x90")), right (utf8 ("\xe2\x86\x92"))
         {
             for (auto* c : std::initializer_list<juce::Component*> { &grid, &play, &seqOn, &rate, &length, &swing, &tempo,
-                                                                      &clear, &four, &offbeat, &random, &left, &right })
+                                                                      &clear, &four, &offbeat, &random, &left, &right, &lock })
                 addAndMakeVisible (c);
             for (auto* k : { &length, &swing, &tempo }) k->setLabelHeight (14);
 
@@ -381,6 +383,8 @@ namespace torden::ui
             swing.setBounds (bar.removeFromLeft (70));
             tempo.setBounds (bar.removeFromLeft (70));
             bar.removeFromLeft (12);
+            lock.setBounds (bar.removeFromRight (18).withSizeKeepingCentre (18, 18));
+            bar.removeFromRight (10);
             for (auto* b : { &right, &left, &random, &offbeat, &four, &clear })
             {
                 const int w = b == &left || b == &right ? 32 : 62;
@@ -434,6 +438,7 @@ namespace torden::ui
         Toggle seqOn;
         Segmented rate;
         Knob length, swing, tempo;
+        LockButton lock;   // keeps the step pattern and its settings when switching presets
         Button clear, four, offbeat, random, left, right;
     };
 }

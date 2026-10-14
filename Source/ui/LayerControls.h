@@ -1,5 +1,6 @@
 #pragma once
-#include "Controls.h"
+#include "../presets/Locks.h"
+#include "Theme.h"
 #include "../PluginProcessor.h"
 
 namespace torden::ui
@@ -13,72 +14,6 @@ namespace torden::ui
     inline std::unique_ptr<Knob> makeKnob (APVTS& s, params::Id id, const juce::String& label)
     {
         return std::make_unique<Knob> (s, params::paramId (id), label);
-    }
-
-    // Small label above a selector (segmented / dropdown / toggle)
-    class Labelled : public juce::Component
-    {
-    public:
-        Labelled (std::unique_ptr<juce::Component> c, juce::String t) : content (std::move (c)), title (std::move (t))
-        {
-            addAndMakeVisible (*content);
-        }
-
-        void paint (juce::Graphics& g) override
-        {
-            g.setColour (Theme::get().palette().textDim);
-            drawSpacedText (g, title.toUpperCase(), getLocalBounds().removeFromTop (14).toFloat(), 9.5f,
-                            juce::Justification::centredLeft, 0.16f);
-        }
-
-        void resized() override { content->setBounds (getLocalBounds().withTrimmedTop (16).withHeight (24)); }
-
-        juce::Component& get() { return *content; }
-
-    private:
-        std::unique_ptr<juce::Component> content;
-        juce::String title;
-    };
-
-    // A row of controls: each entry has a relative width (knobs 1, wide selectors 2-4).
-    struct ControlRow
-    {
-        std::vector<std::pair<std::unique_ptr<juce::Component>, float>> items;
-
-        void add (std::unique_ptr<juce::Component> c, float units = 1.0f) { items.emplace_back (std::move (c), units); }
-
-        void addTo (juce::Component& parent)
-        {
-            for (auto& [c, u] : items) parent.addAndMakeVisible (*c);
-        }
-
-        void setVisible (bool v) { for (auto& [c, u] : items) c->setVisible (v); }
-
-        // Selectors get a fixed height and sit centred in their cell
-        void layout (juce::Rectangle<int> area, int gap = 4)
-        {
-            float total = 0.0f;
-            for (auto& [c, u] : items) total += u;
-            const float unit = (float) (area.getWidth() - gap * ((int) items.size() - 1)) / std::max (1.0f, total);
-            float x = (float) area.getX();
-            for (auto& [c, u] : items)
-            {
-                const int w = (int) (unit * u);
-                juce::Rectangle<int> cell ((int) x, area.getY(), w, area.getHeight());
-                if (dynamic_cast<Knob*> (c.get()) == nullptr)
-                {
-                    const int h = dynamic_cast<Labelled*> (c.get()) != nullptr ? 40 : 24;
-                    cell = cell.withSizeKeepingCentre (w, h).translated (0, -6);
-                }
-                c->setBounds (cell);
-                x += (float) w + (float) gap;
-            }
-        }
-    };
-
-    inline std::unique_ptr<juce::Component> labelled (std::unique_ptr<juce::Component> c, const juce::String& title)
-    {
-        return std::make_unique<Labelled> (std::move (c), title);
     }
 
     // Glyphs for the body shape and sub waves
@@ -163,17 +98,22 @@ namespace torden::ui
     }
 
     // Chip for one layer: dot = on/off, name selects, "S" = solo (not saved)
-    class LayerChip : public juce::Component, public juce::SettableTooltipClient
+    class LayerChip : public juce::Component, public juce::SettableTooltipClient, private juce::Value::Listener
     {
     public:
         LayerChip (TordenProcessor& p, int layerIndex) : proc (p), layer (layerIndex)
         {
+            const int lockGroups[] = { locks::ids().body, locks::ids().click, locks::ids().sub, locks::ids().noise };
+            lockValue.referTo (p.apvts.state.getPropertyAsValue (locks::set()[lockGroups[layer]].property, nullptr));
+            lockValue.addListener (this);
             static const params::Id ons[] = { params::BodyOn, params::ClickOn, params::SubOn, params::NoiseOn };
             auto* param = p.apvts.getParameter (params::paramId (ons[layer]));
             attachment = std::make_unique<juce::ParameterAttachment> (*param, [this] (float v) { on = v > 0.5f; repaint(); }, nullptr);
             attachment->sendInitialUpdate();
             setMouseCursor (juce::MouseCursor::PointingHandCursor);
         }
+
+        ~LayerChip() override { lockValue.removeListener (this); }
 
         std::function<void (int)> onSelect;
         bool selected = false;
@@ -197,8 +137,11 @@ namespace torden::ui
             else    { g.setColour (p.textDim); g.drawEllipse (dot.reduced (0.5f), 1.2f); }
 
             g.setColour (on ? (selected ? p.text : p.text.withAlpha (0.85f)) : p.textDim);
-            drawSpacedText (g, layerNames()[layer].toUpperCase(), r.withTrimmedLeft (26.0f).withTrimmedRight (26.0f), 10.5f,
+            drawSpacedText (g, layerNames()[layer].toUpperCase(), r.withTrimmedLeft (26.0f).withTrimmedRight (50.0f), 10.5f,
                             juce::Justification::centredLeft, 0.18f, selected);
+
+            const bool locked = isLocked();
+            drawPadlock (g, lockArea().toFloat(), locked, locked ? p.accent : (hoverLock ? p.text : p.textDim));
 
             const bool solo = (proc.getSoloMask() & (1 << layer)) != 0;
             const auto s = soloArea().toFloat().withSizeKeepingCentre (17.0f, 17.0f);
@@ -209,11 +152,14 @@ namespace torden::ui
         }
 
         void mouseEnter (const juce::MouseEvent&) override { hover = true; repaint(); }
-        void mouseExit (const juce::MouseEvent&) override  { hover = false; repaint(); }
+        void mouseExit (const juce::MouseEvent&) override  { hover = false; hoverLock = false; repaint(); }
 
         void mouseMove (const juce::MouseEvent& e) override
         {
+            const bool overLock = lockArea().contains (e.getPosition());
+            if (overLock != hoverLock) { hoverLock = overLock; repaint(); }
             setTooltip (powerArea().contains (e.getPosition()) ? "Layer on / off"
+                      : overLock ? "Lock: keep this layer when switching sound presets"
                       : soloArea().contains (e.getPosition()) ? "Solo (only for listening, not saved)" : "Show this layer");
         }
 
@@ -221,6 +167,8 @@ namespace torden::ui
         {
             if (powerArea().contains (e.getPosition()))
                 attachment->setValueAsCompleteGesture (on ? 0.0f : 1.0f);
+            else if (lockArea().contains (e.getPosition()))
+                lockValue = ! isLocked();
             else if (soloArea().contains (e.getPosition()))
             {
                 proc.setSoloMask (proc.getSoloMask() ^ (1 << layer));
@@ -234,10 +182,14 @@ namespace torden::ui
     private:
         juce::Rectangle<int> powerArea() const { return getLocalBounds().removeFromLeft (26); }
         juce::Rectangle<int> soloArea() const  { return getLocalBounds().removeFromRight (26); }
+        juce::Rectangle<int> lockArea() const  { return getLocalBounds().withTrimmedRight (26).removeFromRight (24); }
+        bool isLocked() const { return (bool) lockValue.getValue(); }
+        void valueChanged (juce::Value&) override { repaint(); }
 
         TordenProcessor& proc;
         int layer;
-        bool on = false, hover = false;
+        bool on = false, hover = false, hoverLock = false;
+        juce::Value lockValue;
         std::unique_ptr<juce::ParameterAttachment> attachment;
     };
 }

@@ -3,6 +3,7 @@
 #include <juce_audio_formats/juce_audio_formats.h>
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "presets/Locks.h"
 #include "dsp/OfflineRender.h"
 #include "ui/Theme.h"
 
@@ -153,17 +154,20 @@ namespace
         cases.push_back ({ "tracked pitch", [] (TordenProcessor& p) { set (p.apvts, P::PitchMode, 1); set (p.apvts, P::SubOn, 1); } });
         cases.push_back ({ "long decay", [] (TordenProcessor& p) { set (p.apvts, P::Length, 2.0f); set (p.apvts, P::BodyDecay, 2.5f); } });
 
-        const P::Id fxOn[] = { P::SatOn, P::CrushOn, P::TransOn, P::CompOn, P::EqOn, P::FiltOn, P::VerbOn, P::DlyOn, P::ChrOn, P::WidthOn };
-        for (int f = 0; f < 10; ++f)
-            cases.push_back ({ "fx " + torden::fx::fxNames()[f], [f, fxOn] (TordenProcessor& p) { set (p.apvts, fxOn[f], 1); }, f == 6 || f == 7 });
+        // Every shared effect on its own (the effect DSP itself is tested in fjord-base's FjordEffectsTest)
+        namespace fx = fjord::base::fx;
+        auto onId = [] (int m) { return (P::Id) (P::FxSatOn + fx::onParam (m)); };
+        for (int m = 0; m < fx::kNumChain; ++m)
+            cases.push_back ({ juce::String ("fx ") + fx::info (m).id, [m, onId] (TordenProcessor& p) { set (p.apvts, onId (m), 1); },
+                               m == (int) fx::Module::Reverb || m == (int) fx::Module::Delay || m == (int) fx::Module::Harmonizer });
         for (int m = 0; m < 6; ++m)
             cases.push_back ({ "saturation mode " + juce::String (m), [m] (TordenProcessor& p)
-                { set (p.apvts, P::SatOn, 1); set (p.apvts, P::SatMode, (float) m); set (p.apvts, P::SatDrive, 1.0f); set (p.apvts, P::SatOs, 2); } });
+                { set (p.apvts, P::FxSatOn, 1); set (p.apvts, P::FxSatMode, (float) m); set (p.apvts, P::FxSatDrive, 1.0f); set (p.apvts, P::FxSatOs, 2); } });
         for (int t = 0; t < 5; ++t)
             cases.push_back ({ "filter type " + juce::String (t), [t] (TordenProcessor& p)
-                { set (p.apvts, P::FiltOn, 1); set (p.apvts, P::FiltType, (float) t); set (p.apvts, P::FiltReso, 1.0f); set (p.apvts, P::FiltEnv, 6.0f); } });
-        cases.push_back ({ "all fx", [fxOn] (TordenProcessor& p)
-            { for (auto id : fxOn) set (p.apvts, id, 1); set (p.apvts, P::SatDrive, 1.0f); set (p.apvts, P::NoiseOn, 1); }, true });
+                { set (p.apvts, P::FxFiltOn, 1); set (p.apvts, P::FxFiltType, (float) t); set (p.apvts, P::FxFiltReso, 1.0f); set (p.apvts, P::FxFiltEnv, 6.0f); } });
+        cases.push_back ({ "all fx", [onId] (TordenProcessor& p)
+            { for (int m = 0; m < fx::kNumChain; ++m) set (p.apvts, onId (m), 1); set (p.apvts, P::FxSatDrive, 1.0f); set (p.apvts, P::NoiseOn, 1); }, true });
         cases.push_back ({ "modulation", [] (TordenProcessor& p)
             { set (p.apvts, P::Mod1Src, 1); set (p.apvts, P::Mod1Dst, 5); set (p.apvts, P::Mod1Amt, 1.0f);
               set (p.apvts, P::Mod2Src, 3); set (p.apvts, P::Mod2Dst, 20); set (p.apvts, P::Mod2Amt, -1.0f);
@@ -267,8 +271,8 @@ namespace
         for (int block : { 1, 7, 64, 333, 2048 })
         {
             TordenProcessor proc;
-            set (proc.apvts, P::VerbOn, 1);
-            set (proc.apvts, P::SatOn, 1);
+            set (proc.apvts, P::FxVerbOn, 1);
+            set (proc.apvts, P::FxSatOn, 1);
             const double sr = testSampleRate;
             proc.prepareToPlay (sr, 512);
             juce::AudioBuffer<float> buf (2, block);
@@ -289,13 +293,82 @@ namespace
     }
 
     // Preset XML round trip: parameters, envelopes, pattern and effect order survive save -> init -> load.
+    // Locked parts keep their values when another preset is loaded; unlocked parts change
+    void lockTests()
+    {
+        printf ("Locks\n");
+        torden::PresetManager::ignoreUserPresets = true;
+        TordenProcessor proc;
+        const auto& list = proc.presetManager.getPresets();
+        int a = -1, b = -1;
+        for (int i = 0; i < (int) list.size() && b < 0; ++i)
+        {
+            if (! list[(size_t) i].isFactory) continue;
+            (a < 0 ? a : b) = i;
+        }
+        check (a >= 0 && b >= 0, "two factory presets");
+        if (a < 0 || b < 0) return;
+
+        const auto& ids = torden::locks::ids();
+        const auto& set = torden::locks::set();
+        auto state = proc.apvts.state;
+        auto tune = [&] { return get (proc.apvts, P::BodyTune); };
+        auto clickLevel = [&] { return get (proc.apvts, P::ClickLevel); };
+        auto envPoints = [&] { return proc.sound.getEnv (torden::dsp::Env::BodyAmp).toString(); };
+        auto steps = [&] { return proc.sound.getPattern().toString(); };
+
+        // Find two presets that differ in the things we lock
+        proc.presetManager.setLoadPatterns (true);
+        bool found = false;
+        for (int i = 0; i < (int) list.size() && ! found; ++i)
+            for (int j = i + 1; j < (int) list.size() && ! found; ++j)
+            {
+                if (! list[(size_t) i].isFactory || ! list[(size_t) j].isFactory) continue;
+                proc.presetManager.load (i);
+                const float t0 = tune(), c0 = clickLevel();
+                const auto e0 = envPoints(), s0 = steps();
+                proc.presetManager.load (j);
+                if (std::abs (tune() - t0) > 0.5f && std::abs (clickLevel() - c0) > 0.02f && envPoints() != e0 && steps() != s0)
+                {
+                    a = i; b = j; found = true;
+                }
+            }
+        check (found, "two presets that differ in body tune, click level, body envelope and pattern");
+        if (! found) return;
+
+        proc.presetManager.load (a);
+        const float t0 = tune(), c0 = clickLevel();
+        const auto e0 = envPoints(), s0 = steps();
+        set.setLocked (state, ids.body, true);
+        set.setLocked (state, ids.envelopes[0], true);
+        set.setLocked (state, ids.step, true);
+        proc.presetManager.load (b);
+        check (std::abs (tune() - t0) < 1.0e-4f, "locked body keeps its tune");
+        check (std::abs (clickLevel() - c0) > 0.02f, "unlocked click changes");
+        check (envPoints() == e0, "locked envelope is kept");
+        check (steps() == s0, "locked step pattern is kept");
+
+        set.unlockAll (state);
+        proc.presetManager.load (b);
+        check (std::abs (tune() - t0) > 0.5f && envPoints() != e0 && steps() != s0, "unlocked parts load again");
+
+        // the effect locks come from fjord-base
+        proc.presetManager.load (a);
+        const auto fxReverb = proc.apvts.getRawParameterValue ("fx_reverb_mix")->load();
+        set.setLocked (state, set.find ("fxLock_reverb"), true);
+        proc.presetManager.load (b);
+        check (proc.apvts.getRawParameterValue ("fx_reverb_mix")->load() == fxReverb, "a locked effect keeps its settings");
+        set.unlockAll (state);
+        printf ("  %s\n", "done");
+    }
+
     void presetRoundTrip()
     {
         printf ("Preset round trip\n");
         const int before = failures;
         TordenProcessor proc;
         set (proc.apvts, P::BodyTune, 63.0f);
-        set (proc.apvts, P::SatOn, 1);
+        set (proc.apvts, P::FxSatOn, 1);
         set (proc.apvts, P::ClickMode, 4);
         auto env = proc.sound.getEnv (torden::dsp::Env::Pitch);
         env.points[1] = { 0.23f, 0.1f, -0.4f };
@@ -305,6 +378,7 @@ namespace
         proc.sound.setPattern (pat);
         auto order = proc.getFxOrder();
         std::swap (order[0], order[9]);
+        std::swap (order[2], order[14]);
         proc.setFxOrder (order);
 
         const auto xml = proc.presetManager.createPresetXml ("Test", "Techno");
@@ -313,7 +387,7 @@ namespace
         proc.presetManager.applyXml (*xml, true);
 
         check (std::abs (get (proc.apvts, P::BodyTune) - 63.0f) < 0.01f, "tune");
-        check (get (proc.apvts, P::SatOn) > 0.5f, "saturation on");
+        check (get (proc.apvts, P::FxSatOn) > 0.5f, "saturation on");
         check ((int) get (proc.apvts, P::ClickMode) == 4, "click mode");
         const auto env2 = proc.sound.getEnv (torden::dsp::Env::Pitch);
         check (std::abs (env2.points[1].time - 0.23f) < 1.0e-4f && std::abs (env2.points[1].curve + 0.4f) < 1.0e-3f, "envelope");
@@ -357,7 +431,8 @@ namespace
             if (! list[(size_t) i].isFactory) continue;
             TordenProcessor proc;
             proc.presetManager.load (i);
-            const bool tail = proc.apvts.getRawParameterValue ("verb_on")->load() > 0.5f || proc.apvts.getRawParameterValue ("dly_on")->load() > 0.5f;
+            const bool tail = proc.apvts.getRawParameterValue ("fx_reverb_on")->load() > 0.5f || proc.apvts.getRawParameterValue ("fx_delay_on")->load() > 0.5f
+                              || proc.apvts.getRawParameterValue ("fx_harmonizer_on")->load() > 0.5f;
             const auto s = renderHits (proc, { 0.0, 1.0 }, 5.0);
             const bool ok = s.finite && s.peak <= 0.995f && s.peak > 0.05f && std::abs (s.dc) < 0.01 && (tail || s.tailRms < 3.0e-4);
             printf ("  %-12s %-22s peak %.3f  rms %.3f  tail %.1e  %s\n", list[(size_t) i].category.toRawUTF8(), list[(size_t) i].name.toRawUTF8(),
@@ -382,7 +457,7 @@ static int loudness (const juce::File& out)
         proc.presetManager.load (i);
         set (proc.apvts, P::PresetLevel, 0.0f);
         set (proc.apvts, P::MasterGain, 0.0f);
-        set (proc.apvts, P::ClipOn, 0);
+        set (proc.apvts, P::FxOutOn, 0);
         const auto s = renderHits (proc, { 0.0 }, 0.4);
         root->setProperty (list[(size_t) i].name, juce::Decibels::gainToDecibels (s.rms, -120.0));
     }
@@ -454,7 +529,7 @@ static int takeScreenshot (const juce::String& pageName, const juce::String& pre
 
     torden::ui::Theme::get().setDark (theme == "dark");
     std::unique_ptr<juce::AudioProcessorEditor> editorWindow (proc.createEditor());
-    editorWindow->setSize (TordenView::baseWidth, TordenView::baseHeight);
+    editorWindow->setSize (TordenView::width, TordenView::height);
     auto* editor = dynamic_cast<TordenEditor*> (editorWindow.get());
     if (editor == nullptr) return 1;
     auto& view = editor->getView();
@@ -638,6 +713,7 @@ int main (int argc, char** argv)
     sequencerTest();
     blockSizeTest();
     presetRoundTrip();
+    lockTests();
     factoryPresetTests (outDir, writeFiles);
 
     printf (failures == 0 ? "ALL PASSED\n" : "%d FAILURES\n", failures);

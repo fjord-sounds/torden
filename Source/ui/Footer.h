@@ -1,7 +1,7 @@
 #pragma once
 #include <juce_audio_formats/juce_audio_formats.h>
-#include "Controls.h"
-#include "Keyboard.h"
+#include "Theme.h"
+#include "Theme.h"
 #include "Mutate.h"
 #include "KickPreview.h"
 
@@ -306,7 +306,7 @@ namespace torden::ui
             const auto values = proc.currentValues();
             hit.note = (float) values.i (params::RootNote);
             const double sr = proc.getCurrentSampleRate() > 1000.0 ? proc.getCurrentSampleRate() : 48000.0;
-            const bool tails = values.b (params::VerbOn) || values.b (params::DlyOn);
+            const bool tails = values.b (params::FxVerbOn) || values.b (params::FxDlyOn) || values.b (params::FxHarmOn);
             const auto res = renderer.render (values, proc.sound.envelopes(), proc.getFxOrder(), sr,
                                               preview.kickDuration() + (tails ? 1.5f : 0.05f), true, hit, proc.getBpm());
             // Trim trailing silence and fade the last 5 ms

@@ -1,4 +1,5 @@
 #pragma once
+#include "../presets/Locks.h"
 #include "LayerControls.h"
 #include "KickTimeline.h"
 #include "visuals/KickVisual.h"
@@ -144,8 +145,10 @@ namespace torden::ui
               velLevel (p.apvts, params::paramId (params::VelLevel), "Vel Level"),
               velPitch (p.apvts, params::paramId (params::VelPitch), "Vel Pitch"),
               velClick (p.apvts, params::paramId (params::VelClick), "Vel Click"),
-              driveEnv (p.apvts, params::paramId (params::DriveEnv), "Drive Env")
+              driveEnv (p.apvts, params::paramId (params::DriveEnv), "Drive Env"),
+              lock (p.apvts, locks::set(), locks::ids().kick, false)
         {
+            addAndMakeVisible (lock);
             for (auto* c : std::initializer_list<juce::Component*> { &tuning, &pitchMode, &retrigger, &root, &tune, &fine, &length,
                                                                       &velLevel, &velPitch, &velClick, &driveEnv })
                 addAndMakeVisible (c);
@@ -155,6 +158,7 @@ namespace torden::ui
 
         void resized() override
         {
+            placeTitleLock (lock);
             auto r = content();
             tuning.setBounds (r.removeFromTop (40).reduced (4, 0));
             r.removeFromTop (6);
@@ -172,6 +176,7 @@ namespace torden::ui
         TuningDisplay tuning;
         Segmented pitchMode, retrigger;
         Knob root, tune, fine, length, velLevel, velPitch, velClick, driveEnv;
+        LockButton lock;   // keeps the kick settings when switching presets
     };
 
     // ---------------------------------------------------------------------------------------------

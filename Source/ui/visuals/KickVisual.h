@@ -1,6 +1,6 @@
 #pragma once
 #include <juce_dsp/juce_dsp.h>
-#include "../Controls.h"
+#include "../Theme.h"
 #include "../KickPreview.h"
 
 namespace torden::ui

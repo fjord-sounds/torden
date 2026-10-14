@@ -101,7 +101,7 @@ namespace torden::ui
             dsp::HitInfo hit;
             hit.note = (float) values.i (params::RootNote);
             baseHz = dsp::bodyBaseHz (values, hit);
-            const bool tails = values.b (params::VerbOn) || values.b (params::DlyOn);
+            const bool tails = values.b (params::FxVerbOn) || values.b (params::FxDlyOn) || values.b (params::FxHarmOn);
             const float seconds = juce::jlimit (0.2f, 3.5f, duration * 1.1f + (tails ? 0.6f : 0.05f));
             current = renderer.render (values, proc.sound.envelopes(), order, renderRate, seconds, true, hit, proc.getBpm());
             lastRender = juce::Time::getMillisecondCounterHiRes();

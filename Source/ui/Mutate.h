@@ -21,8 +21,7 @@ namespace torden::ui
             if (pid.startsWith ("click_")) return Click;
             if (pid.startsWith ("sub_")) return Sub;
             if (pid.startsWith ("noise_")) return Noise;
-            for (const char* fx : { "sat_", "crush_", "trans_", "comp_", "eq_", "filt_", "verb_", "dly_", "chr_", "width_" })
-                if (pid.startsWith (fx)) return Effects;
+            if (pid.startsWith ("fx_") && ! pid.startsWith ("fx_out_")) return Effects;   // the shared effects (not the clipper)
             return -1;
         }
 
@@ -32,12 +31,12 @@ namespace torden::ui
             proc.undoManager.beginNewTransaction ("Mutate");
             for (const auto& s : params::specs())
             {
-                const int part = partOf (s.id);
+                const int part = partOf ((params::Id) s.id);
                 if (part < 0 || ! enabled[(size_t) part]) continue;
                 const juce::String pid = s.paramId;
                 // Switches and levels stay: mutate the character, not the mix decisions
                 if (s.kind == params::Kind::Bool || pid.endsWith ("_level") || pid.endsWith ("_mix") || pid.endsWith ("_out")
-                    || pid.endsWith ("_on") || pid == "sat_os") continue;
+                    || pid.endsWith ("_on") || pid.endsWith ("_os") || pid.endsWith ("_slope") || pid.endsWith ("_sync") || pid.endsWith ("_note")) continue;
                 auto* param = proc.apvts.getParameter (pid);
                 if (param == nullptr) continue;
                 float n = param->getValue();

@@ -1,7 +1,7 @@
 name: Release
 
-# Runs when a tag like v0.2.0 is pushed (see tools/release/bump_version.py).
-# Windows and Linux binaries only: macOS builds are not published, macOS users build from source.
+# Runs when a tag like v0.2.0 is pushed (see fjord-base/tools/release/bump_version.py): Windows and Linux binaries,
+# notes from CHANGELOG.md. macOS builds are not published, macOS users build from source.
 on:
   push:
     tags: ["v*"]
@@ -10,67 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - { name: Windows, os: windows-latest, artefacts: "build/Torden_artefacts/Release" }
-          - { name: Linux,   os: ubuntu-latest,  artefacts: "build/Torden_artefacts/Release" }
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Tag matches CMakeLists.txt
-        shell: bash
-        run: |
-          V=$(sed -n 's/^project(Torden VERSION \([0-9.]*\).*/\1/p' CMakeLists.txt)
-          [ "v$V" = "${GITHUB_REF_NAME}" ] || { echo "Tag ${GITHUB_REF_NAME} != CMake version v$V"; exit 1; }
-
-      - name: Linux dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libasound2-dev libx11-dev libxinerama-dev libxext-dev libxrandr-dev libxcursor-dev \
-            libfreetype-dev libfontconfig1-dev libgl1-mesa-dev
-
-      - name: Build
-        run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DTORDEN_COPY_PLUGIN=OFF
-          cmake --build build --config Release --target Torden_All -j4
-
-      - name: Package
-        shell: bash
-        run: |
-          mkdir dist
-          cp LICENSE README.md dist/
-          cp -R "${{ matrix.artefacts }}"/VST3 dist/ 2>/dev/null || true
-          cp -R "${{ matrix.artefacts }}"/AU dist/ 2>/dev/null || true
-          cp -R "${{ matrix.artefacts }}"/LV2 dist/ 2>/dev/null || true
-          cp -R "${{ matrix.artefacts }}"/Standalone dist/ 2>/dev/null || true
-          cd dist && 7z a -tzip "../Torden-${GITHUB_REF_NAME}-${{ matrix.name }}.zip" . > /dev/null
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: Torden-${{ matrix.name }}
-          path: Torden-*.zip
-
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v8
-        with:
-          path: dist
-          merge-multiple: true
-      - name: Release notes from CHANGELOG.md
-        run: |
-          V="${GITHUB_REF_NAME#v}"
-          awk -v v="$V" '$0 ~ "^## \\[" v "\\]" {f=1; next} /^## \[/ {f=0} f' CHANGELOG.md > notes.md
-      - name: Create release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "${GITHUB_REF_NAME}" dist/*.zip --title "Torden ${GITHUB_REF_NAME#v}" \
-            --notes-file notes.md ${{ contains(github.ref_name, '-') && '--prerelease' || '' }}
+  release:
+    uses: fjord-sounds/fjord-base/.github/workflows/plugin-release.yml@main
+    with:
+      target: Torden

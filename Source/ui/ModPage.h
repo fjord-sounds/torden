@@ -1,6 +1,7 @@
 #pragma once
+#include "../presets/Locks.h"
 #include "LayerControls.h"
-#include "PresetBrowser.h"
+#include "Theme.h"
 
 namespace torden::ui
 {
@@ -20,11 +21,11 @@ namespace torden::ui
     {
         const juce::String id = s.paramId;
         static const std::pair<const char*, const char*> groups[] = {
-            { "body_", "Body" }, { "click_", "Click" }, { "sub_", "Sub" }, { "noise_", "Noise" }, { "sat_", "Saturation" },
-            { "crush_", "Crush" }, { "trans_", "Transient" }, { "comp_", "Compressor" }, { "eq_", "EQ" }, { "filt_", "Filter" },
-            { "verb_", "Reverb" }, { "dly_", "Delay" }, { "chr_", "Motion" }, { "width_", "Width" }, { "clip_", "Clipper" } };
+            { "body_", "Body" }, { "click_", "Click" }, { "sub_", "Sub" }, { "noise_", "Noise" } };
         for (const auto& [prefix, name] : groups)
             if (id.startsWith (prefix)) return name;
+        if (const int m = fjord::base::fx::moduleOfParamId (id); m >= 0)
+            return fjord::base::fx::info (m).name;
         return "Kick";
     }
 
@@ -315,7 +316,11 @@ namespace torden::ui
     {
     public:
         explicit ModPage (TordenProcessor& p)
+            : macroLock (p.apvts, locks::set(), locks::ids().macros, false),
+              matrixLock (p.apvts, locks::set(), locks::ids().matrix, false)
         {
+            addAndMakeVisible (macroLock);
+            addAndMakeVisible (matrixLock);
             for (int m = 0; m < P::kNumMacros; ++m)
             {
                 macros[(size_t) m] = std::make_unique<MacroControl> (p, m);
@@ -352,6 +357,9 @@ namespace torden::ui
 
         void resized() override
         {
+            auto titleLock = [] (juce::Rectangle<int> area) { return area.reduced (16, 0).removeFromTop (34).removeFromRight (18).withSizeKeepingCentre (18, 18); };
+            macroLock.setBounds (titleLock (macroArea()));
+            matrixLock.setBounds (titleLock (matrixArea()));
             auto m = macroArea().reduced (12).withTrimmedTop (30);
             const int h = m.getHeight() / 2, w = m.getWidth() / 2;
             for (int i = 0; i < P::kNumMacros; ++i)
@@ -373,6 +381,7 @@ namespace torden::ui
             for (auto& m : macros) m->repaint();
         }
 
+        LockButton macroLock, matrixLock;   // keep the macros / the modulation matrix when switching presets
         std::array<std::unique_ptr<MacroControl>, P::kNumMacros> macros;
         std::array<std::unique_ptr<ModSlot>, P::kNumModSlots> slots;
     };

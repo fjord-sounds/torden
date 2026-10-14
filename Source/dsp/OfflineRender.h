@@ -1,9 +1,11 @@
 #pragma once
 #include "KickEngine.h"
-#include "../fx/FxChain.h"
+#include <fjord_base/fx/Chain.h>
 
 namespace torden::dsp
 {
+    namespace fx = fjord::base::fx;
+
     // Renders one hit away from the audio thread: for the kick display (per layer, before the effects),
     // the spectrum view and the WAV export (after the effects).
     class OfflineRenderer
@@ -68,7 +70,11 @@ namespace torden::dsp
                 {
                     const int n = std::min (blockSize, total - pos);
                     fx::StereoBuffer b { r.outL.data() + pos, r.outR.data() + pos, n };
-                    chain.process (b, fxValues, order, bpm, &hitPos, pos == 0 ? 1 : 0);
+                    fx::Context ctx;
+                    ctx.bpm = bpm;
+                    ctx.triggers = &hitPos;
+                    ctx.numTriggers = pos == 0 ? 1 : 0;
+                    chain.process (b, params::fxValues (fxValues), order, ctx);
                 }
                 for (int i = 0; i < total; ++i) { r.outL[(size_t) i] *= post; r.outR[(size_t) i] *= post; }
             }
@@ -79,6 +85,6 @@ namespace torden::dsp
         static constexpr int blockSize = 256;
         double preparedRate = 0.0;
         KickEngine engine;
-        fx::FxChain chain;
+        fx::Chain chain;
     };
 }

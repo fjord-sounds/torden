@@ -1,6 +1,8 @@
 #pragma once
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <array>
+#include <fjord_base/params/Params.h>
+#include <fjord_base/fx/FxParams.h>
 
 namespace torden::params
 {
@@ -74,126 +76,34 @@ namespace torden::params
         X (Macro4, "macro4", "Macro 4", F, 0, 1, 0, 0, Pct, "")                                                      \
         TORDEN_MOD_SLOT (X, 1) TORDEN_MOD_SLOT (X, 2) TORDEN_MOD_SLOT (X, 3) TORDEN_MOD_SLOT (X, 4)                  \
         TORDEN_MOD_SLOT (X, 5) TORDEN_MOD_SLOT (X, 6) TORDEN_MOD_SLOT (X, 7) TORDEN_MOD_SLOT (X, 8)                  \
-        /* Effects */                                                                                                \
-        X (SatOn,       "sat_on",       "Saturation On",     B, 0, 1, 0,         0, None, "")                        \
-        X (SatMode,     "sat_mode",     "Saturation Mode",   C, 0, 5, 0,         0, None, "Tape|Tube|Diode|Fold|Hard|Rectify") \
-        X (SatDrive,    "sat_drive",    "Saturation Drive",  F, 0, 1, 0.3f,      0, Pct, "")                         \
-        X (SatBias,     "sat_bias",     "Saturation Bias",   F, -1, 1, 0,        0, Bip, "")                         \
-        X (SatTone,     "sat_tone",     "Saturation Tone",   F, -1, 1, 0,        0, Bip, "")                         \
-        X (SatOs,       "sat_os",       "Oversampling",      C, 0, 2, 1,         0, None, "1x|2x|4x")                \
-        X (SatMix,      "sat_mix",      "Saturation Mix",    F, 0, 1, 1,         0, Pct, "")                         \
-        X (SatOut,      "sat_out",      "Saturation Output", F, -24, 12, 0,      0, Db, "")                          \
-        X (CrushOn,     "crush_on",     "Crush On",          B, 0, 1, 0,         0, None, "")                        \
-        X (CrushBits,   "crush_bits",   "Crush Bits",        F, 1, 16, 12,       0, Bits, "")                        \
-        X (CrushRate,   "crush_rate",   "Crush Downsample",  F, 1, 40, 1,        6, Mult, "")                        \
-        X (CrushJitter, "crush_jitter", "Crush Jitter",      F, 0, 1, 0,         0, Pct, "")                         \
-        X (CrushMix,    "crush_mix",    "Crush Mix",         F, 0, 1, 1,         0, Pct, "")                         \
-        X (TransOn,     "trans_on",     "Transient On",      B, 0, 1, 0,         0, None, "")                        \
-        X (TransAttack, "trans_attack", "Transient Attack",  F, -1, 1, 0.3f,     0, Bip, "")                         \
-        X (TransSustain,"trans_sustain","Transient Sustain", F, -1, 1, 0,        0, Bip, "")                         \
-        X (TransSpeed,  "trans_speed",  "Transient Speed",   F, 0, 1, 0.5f,      0, Pct, "")                         \
-        X (TransOut,    "trans_out",    "Transient Output",  F, -12, 12, 0,      0, Db, "")                          \
-        X (CompOn,      "comp_on",      "Compressor On",     B, 0, 1, 0,         0, None, "")                        \
-        X (CompThresh,  "comp_thresh",  "Comp Threshold",    F, -48, 0, -18,     0, Db, "")                          \
-        X (CompRatio,   "comp_ratio",   "Comp Ratio",        F, 1, 20, 4,        4, Ratio, "")                       \
-        X (CompAttack,  "comp_attack",  "Comp Attack",       F, 0.1f, 100, 10,   10, Ms, "")                         \
-        X (CompRelease, "comp_release", "Comp Release",      F, 10, 1000, 120,   120, Ms, "")                        \
-        X (CompKnee,    "comp_knee",    "Comp Knee",         F, 0, 18, 6,        0, Db, "")                          \
-        X (CompMakeup,  "comp_makeup",  "Comp Makeup",       F, 0, 24, 0,        0, Db, "")                          \
-        X (CompMix,     "comp_mix",     "Comp Mix",          F, 0, 1, 1,         0, Pct, "")                         \
-        X (CompHpf,     "comp_hpf",     "Comp Sidechain HPF",F, 20, 500, 20,     -1, Hz, "")                         \
-        X (EqOn,        "eq_on",        "EQ On",             B, 0, 1, 0,         0, None, "")                        \
-        X (EqLowCut,    "eq_lowcut",    "EQ Low Cut",        F, 20, 1000, 20,    -1, Hz, "")                         \
-        X (EqLowFreq,   "eq_low_freq",  "EQ Low Freq",       F, 20, 500, 60,     -1, Hz, "")                         \
-        X (EqLowGain,   "eq_low_gain",  "EQ Low Gain",       F, -18, 18, 0,      0, Db, "")                          \
-        X (EqMidFreq,   "eq_mid_freq",  "EQ Mid Freq",       F, 40, 8000, 250,   -1, Hz, "")                         \
-        X (EqMidGain,   "eq_mid_gain",  "EQ Mid Gain",       F, -18, 18, 0,      0, Db, "")                          \
-        X (EqMidQ,      "eq_mid_q",     "EQ Mid Q",          F, 0.2f, 10, 1,     1, Plain, "")                       \
-        X (EqMid2Freq,  "eq_mid2_freq", "EQ Mid 2 Freq",     F, 200, 16000, 3000,-1, Hz, "")                         \
-        X (EqMid2Gain,  "eq_mid2_gain", "EQ Mid 2 Gain",     F, -18, 18, 0,      0, Db, "")                          \
-        X (EqMid2Q,     "eq_mid2_q",    "EQ Mid 2 Q",        F, 0.2f, 10, 1,     1, Plain, "")                       \
-        X (EqHighFreq,  "eq_high_freq", "EQ High Freq",      F, 1000, 20000, 8000,-1, Hz, "")                        \
-        X (EqHighGain,  "eq_high_gain", "EQ High Gain",      F, -18, 18, 0,      0, Db, "")                          \
-        X (EqHighCut,   "eq_highcut",   "EQ High Cut",       F, 1000, 20000, 20000,-1, Hz, "")                       \
-        X (FiltOn,      "filt_on",      "Filter On",         B, 0, 1, 0,         0, None, "")                        \
-        X (FiltType,    "filt_type",    "Filter Type",       C, 0, 4, 0,         0, None, "Ladder|Low Pass|Band Pass|High Pass|Notch") \
-        X (FiltCutoff,  "filt_cutoff",  "Filter Cutoff",     F, 20, 20000, 2000, -1, Hz, "")                         \
-        X (FiltReso,    "filt_reso",    "Filter Resonance",  F, 0, 1, 0.2f,      0, Pct, "")                         \
-        X (FiltEnv,     "filt_env",     "Filter Env Amount", F, -6, 6, 0,        0, Oct, "")                         \
-        X (FiltDecay,   "filt_decay",   "Filter Env Decay",  F, 0.005f, 2, 0.15f, 0.15f, Time, "")                   \
-        X (FiltDrive,   "filt_drive",   "Filter Drive",      F, 0, 1, 0,         0, Pct, "")                         \
-        X (FiltMix,     "filt_mix",     "Filter Mix",        F, 0, 1, 1,         0, Pct, "")                         \
-        X (VerbOn,      "verb_on",      "Reverb On",         B, 0, 1, 0,         0, None, "")                        \
-        X (VerbMode,    "verb_mode",    "Reverb Mode",       C, 0, 2, 0,         0, None, "Room|Plate|Hall")         \
-        X (VerbSize,    "verb_size",    "Reverb Size",       F, 0, 1, 0.3f,      0, Pct, "")                         \
-        X (VerbDecay,   "verb_decay",   "Reverb Decay",      F, 0.1f, 10, 0.8f,  1, Time, "")                        \
-        X (VerbDamp,    "verb_damp",    "Reverb Damping",    F, 0, 1, 0.5f,      0, Pct, "")                         \
-        X (VerbPre,     "verb_predelay","Reverb Pre-Delay",  F, 0, 0.2f, 0.01f,  0.04f, Time, "")                    \
-        X (VerbLowCut,  "verb_lowcut",  "Reverb Low Cut",    F, 20, 1000, 200,   -1, Hz, "")                         \
-        X (VerbWidth,   "verb_width",   "Reverb Width",      F, 0, 1, 1,         0, Pct, "")                         \
-        X (VerbDuck,    "verb_duck",    "Reverb Ducking",    F, 0, 1, 0.3f,      0, Pct, "")                         \
-        X (VerbMix,     "verb_mix",     "Reverb Mix",        F, 0, 1, 0.2f,      0, Pct, "")                         \
-        X (DlyOn,       "dly_on",       "Delay On",          B, 0, 1, 0,         0, None, "")                        \
-        X (DlySync,     "dly_sync",     "Delay Sync",        B, 0, 1, 1,         0, None, "")                        \
-        X (DlyBeats,    "dly_beats",    "Delay Note",        C, 0, 10, 5,        0, None, "1/32|1/16T|1/16|1/8T|1/16D|1/8|1/4T|1/8D|1/4|1/4D|1/2") \
-        X (DlyTime,     "dly_time",     "Delay Time",        F, 1, 2000, 250,    250, Ms, "")                        \
-        X (DlyFeedback, "dly_fb",       "Delay Feedback",    F, 0, 0.95f, 0.3f,  0, Pct, "")                         \
-        X (DlyPingPong, "dly_pingpong", "Delay Ping-Pong",   B, 0, 1, 0,         0, None, "")                        \
-        X (DlyDamp,     "dly_damp",     "Delay Damping",     F, 0, 1, 0.4f,      0, Pct, "")                         \
-        X (DlyLowCut,   "dly_lowcut",   "Delay Low Cut",     F, 20, 2000, 150,   -1, Hz, "")                         \
-        X (DlyDuck,     "dly_duck",     "Delay Ducking",     F, 0, 1, 0.4f,      0, Pct, "")                         \
-        X (DlyMix,      "dly_mix",      "Delay Mix",         F, 0, 1, 0.15f,     0, Pct, "")                         \
-        X (ChrOn,       "chr_on",       "Motion On",         B, 0, 1, 0,         0, None, "")                        \
-        X (ChrMode,     "chr_mode",     "Motion Mode",       C, 0, 2, 0,         0, None, "Chorus|Phaser|Flanger")   \
-        X (ChrRate,     "chr_rate",     "Motion Rate",       F, 0.02f, 10, 0.5f, -1, Hz, "")                         \
-        X (ChrDepth,    "chr_depth",    "Motion Depth",      F, 0, 1, 0.5f,      0, Pct, "")                         \
-        X (ChrFeedback, "chr_fb",       "Motion Feedback",   F, 0, 1, 0.3f,      0, Pct, "")                         \
-        X (ChrMix,      "chr_mix",      "Motion Mix",        F, 0, 1, 0.3f,      0, Pct, "")                         \
-        X (WidthOn,     "width_on",     "Width On",          B, 0, 1, 0,         0, None, "")                        \
-        X (WidthAmount, "width_amount", "Stereo Width",      F, 0, 2, 1,         0, Pct, "")                         \
-        X (WidthMono,   "width_mono",   "Mono Below",        F, 20, 500, 120,    -1, Hz, "")                         \
-        X (ClipOn,      "clip_on",      "Clipper On",        B, 0, 1, 1,         0, None, "")                        \
-        X (ClipMode,    "clip_mode",    "Clipper Mode",      C, 0, 2, 0,         0, None, "Soft|Hard|Tape")          \
-        X (ClipDrive,   "clip_drive",   "Clipper Drive",     F, 0, 24, 0,        0, Db, "")                          \
-        X (ClipCeiling, "clip_ceiling", "Clipper Ceiling",   F, -12, 0, -0.3f,   0, Db, "")                          \
         /* Step sequencer */                                                                                         \
         X (SeqOn,       "seq_on",       "Step Mode",         B, 0, 1, 0,         0, None, "")                        \
         X (SeqLength,   "seq_length",   "Steps",             I, 1, 32, 16,       0, Steps, "")                       \
         X (SeqRate,     "seq_rate",     "Step Rate",         C, 0, 4, 2,         0, None, "1/8|1/8T|1/16|1/16T|1/32") \
         X (SeqSwing,    "seq_swing",    "Swing",             F, 0, 0.75f, 0,     0, Pct, "")                         \
-        X (SeqBpm,      "seq_bpm",      "Internal Tempo",    F, 60, 200, 128,    0, Bpm, "")
+        X (SeqBpm,      "seq_bpm",      "Internal Tempo",    F, 60, 200, 128,    0, Bpm, "")                         \
+        /* Effects: the shared block of the family (fjord-base), always last */                                     \
+        FJORD_FX_PARAMS (X)
 
     #define TORDEN_MOD_SLOT(X, n)                                                                                    \
         X (Mod##n##Src, "mod" #n "_src", "Mod " #n " Source", C, 0, 7, 0, 0, None, "None|Velocity|Note|Random|Macro 1|Macro 2|Macro 3|Macro 4") \
         X (Mod##n##Dst, "mod" #n "_dst", "Mod " #n " Target", C, 0, 0, 0, 0, None, "@targets")                     \
         X (Mod##n##Amt, "mod" #n "_amt", "Mod " #n " Amount", F, -1, 1, 0, 0, Bip, "")
 
-    #define TORDEN_ENUM_ENTRY(e, ...) e,
-    enum Id : int { TORDEN_PARAMS (TORDEN_ENUM_ENTRY) Count };
-    #undef TORDEN_ENUM_ENTRY
+    enum Id : int { TORDEN_PARAMS (FJORD_PARAM_ENUM) Count };
 
-    enum class Kind { Float, Int, Choice, Bool };
-    enum class Format { None, Pct, Bip, Hz, Time, Ms, Db, Semi, Cents, Pan, Mult, Deg, Oct, Bits, Ratio, Shape, Note, Bpm, Steps, Plain };
-
-    struct Spec
-    {
-        Id id;
-        const char* paramId;
-        const char* name;
-        Kind kind;
-        float min, max, def, curve;
-        Format format;
-        juce::StringArray choices;
-    };
+    // Kinds, formats, specs, value snapshots: the shared parameter machinery of fjord-base
+    using Kind = fjord::base::params::Kind;
+    using Format = fjord::base::params::Format;
+    using Spec = fjord::base::params::Spec;
+    using fjord::base::params::toNormalised;
+    using fjord::base::params::fromNormalised;
+    using fjord::base::params::formatValue;
+    using fjord::base::params::noteName;
 
     const std::array<Spec, Count>& specs();
     inline const Spec& spec (Id id) { return specs()[(size_t) id]; }
     inline juce::String paramId (Id id) { return spec (id).paramId; }
-
-    // Mapping between plain values and 0..1 (same maths as the host sees)
-    float toNormalised (const Spec&, float plain);
-    float fromNormalised (const Spec&, float normalised);
-    juce::String formatValue (const Spec&, float plain);
 
     // Modulation targets: every continuous parameter except the ones that make no sense to modulate.
     const std::vector<Id>& modTargets();
@@ -208,39 +118,18 @@ namespace torden::params
 
     juce::AudioProcessorValueTreeState::ParameterLayout createLayout();
 
-    juce::String noteName (int midiNote);
-
     // Plain values of all parameters, read once per audio block.
-    struct Values
-    {
-        std::array<float, Count> v {};
-        float operator[] (Id id) const { return v[(size_t) id]; }
-        float& operator[] (Id id) { return v[(size_t) id]; }
-        int i (Id id) const { return (int) std::lround (v[(size_t) id]); }
-        bool b (Id id) const { return v[(size_t) id] > 0.5f; }
-    };
+    using Values = fjord::base::params::ValuesT<Id, Count>;
 
-    class Reader
+    class Reader : public fjord::base::params::ReaderT<Id, Count>
     {
     public:
-        explicit Reader (juce::AudioProcessorValueTreeState& state)
-        {
-            for (int i = 0; i < Count; ++i)
-            {
-                raw[(size_t) i] = state.getRawParameterValue (specs()[(size_t) i].paramId);
-                jassert (raw[(size_t) i] != nullptr);
-            }
-        }
-
-        void read (Values& out) const
-        {
-            for (size_t i = 0; i < raw.size(); ++i)
-                out.v[i] = raw[i]->load (std::memory_order_relaxed);
-        }
-
-    private:
-        std::array<std::atomic<float>*, Count> raw {};
+        explicit Reader (juce::AudioProcessorValueTreeState& state) : ReaderT (state, specs()) {}
     };
+
+    // The effect block inside the values (fjord-base effects read it directly)
+    inline fjord::base::fx::Values fxValues (const Values& v) { return { v.data() + FxSatOn }; }
+    static_assert (FxOutCeiling - FxSatOn + 1 == fjord::base::fx::NumParams, "the effect block must be complete and in order");
 
     // Defaults as Values (for tests and offline rendering)
     Values defaults();

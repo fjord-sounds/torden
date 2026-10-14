@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TordenPreset name="Zaag Saw" category="Hardstyle" author="Torden" tags="Distorted,Long" macros="Punch,Length,Drive,Tone" fxOrder="2,0,5,4,3,1,8,7,6,9">
+<TordenPreset name="Zaag Saw" category="Hardstyle" author="Torden" tags="Distorted,Long" macros="Punch,Length,Drive,Tone" fxOrder="transient,saturation,filter,eq,compressor,lofi,motion,delay,reverb,width">
   <Param id="preset_level" value="1.61909"/>
   <Param id="drive_env" value="0.6"/>
   <Param id="body_level" value="0.85"/>
@@ -24,26 +24,91 @@
   <Param id="mod4_src" value="7"/>
   <Param id="mod4_dst" value="13"/>
   <Param id="mod4_amt" value="-0.45"/>
-  <Param id="sat_on" value="1"/>
-  <Param id="sat_mode" value="4"/>
-  <Param id="sat_drive" value="0.8"/>
-  <Param id="sat_bias" value="0"/>
-  <Param id="sat_tone" value="0"/>
-  <Param id="sat_os" value="2"/>
-  <Param id="sat_mix" value="1"/>
-  <Param id="sat_out" value="-7"/>
-  <Param id="filt_on" value="1"/>
-  <Param id="filt_type" value="0"/>
-  <Param id="filt_cutoff" value="1800"/>
-  <Param id="filt_reso" value="0.4"/>
-  <Param id="filt_env" value="1.5"/>
-  <Param id="filt_decay" value="0.3"/>
-  <Param id="filt_drive" value="0"/>
-  <Param id="filt_mix" value="1"/>
-  <Param id="clip_on" value="1"/>
-  <Param id="clip_mode" value="1"/>
-  <Param id="clip_drive" value="5"/>
-  <Param id="clip_ceiling" value="-0.3"/>
+  <Param id="fx_saturation_on" value="1"/>
+  <Param id="fx_saturation_mode" value="4"/>
+  <Param id="fx_saturation_drive" value="0.8"/>
+  <Param id="fx_saturation_bias" value="0"/>
+  <Param id="fx_saturation_tone" value="0"/>
+  <Param id="fx_saturation_os" value="2"/>
+  <Param id="fx_saturation_out" value="-7"/>
+  <Param id="fx_saturation_mix" value="1"/>
+  <Param id="fx_lofi_on" value="0"/>
+  <Param id="fx_lofi_wow" value="0"/>
+  <Param id="fx_lofi_flutter" value="0"/>
+  <Param id="fx_lofi_age" value="0"/>
+  <Param id="fx_lofi_noise" value="0"/>
+  <Param id="fx_lofi_bits" value="12"/>
+  <Param id="fx_lofi_rate" value="1"/>
+  <Param id="fx_lofi_jitter" value="0"/>
+  <Param id="fx_lofi_mix" value="1"/>
+  <Param id="fx_transient_on" value="0"/>
+  <Param id="fx_transient_attack" value="0.3"/>
+  <Param id="fx_transient_sustain" value="0"/>
+  <Param id="fx_transient_speed" value="0.5"/>
+  <Param id="fx_transient_out" value="0"/>
+  <Param id="fx_compressor_on" value="0"/>
+  <Param id="fx_compressor_thresh" value="-18"/>
+  <Param id="fx_compressor_ratio" value="4"/>
+  <Param id="fx_compressor_attack" value="10"/>
+  <Param id="fx_compressor_release" value="120"/>
+  <Param id="fx_compressor_knee" value="6"/>
+  <Param id="fx_compressor_makeup" value="0"/>
+  <Param id="fx_compressor_mix" value="1"/>
+  <Param id="fx_compressor_hpf" value="20"/>
+  <Param id="fx_eq_on" value="0"/>
+  <Param id="fx_eq_lowcut" value="20"/>
+  <Param id="fx_eq_low_freq" value="60"/>
+  <Param id="fx_eq_low_gain" value="0"/>
+  <Param id="fx_eq_mid_freq" value="250"/>
+  <Param id="fx_eq_mid_gain" value="0"/>
+  <Param id="fx_eq_mid_q" value="1"/>
+  <Param id="fx_eq_mid2_freq" value="3000"/>
+  <Param id="fx_eq_mid2_gain" value="0"/>
+  <Param id="fx_eq_mid2_q" value="1"/>
+  <Param id="fx_eq_high_freq" value="8000"/>
+  <Param id="fx_eq_high_gain" value="0"/>
+  <Param id="fx_eq_highcut" value="20000"/>
+  <Param id="fx_filter_on" value="1"/>
+  <Param id="fx_filter_type" value="0"/>
+  <Param id="fx_filter_cutoff" value="1800"/>
+  <Param id="fx_filter_reso" value="0.4"/>
+  <Param id="fx_filter_drive" value="0"/>
+  <Param id="fx_filter_env" value="1.5"/>
+  <Param id="fx_filter_decay" value="0.3"/>
+  <Param id="fx_filter_mix" value="1"/>
+  <Param id="fx_motion_on" value="0"/>
+  <Param id="fx_motion_mode" value="0"/>
+  <Param id="fx_motion_rate" value="0.5"/>
+  <Param id="fx_motion_depth" value="0.5"/>
+  <Param id="fx_motion_feedback" value="0.3"/>
+  <Param id="fx_motion_mix" value="0.3"/>
+  <Param id="fx_delay_on" value="0"/>
+  <Param id="fx_delay_sync" value="1"/>
+  <Param id="fx_delay_note" value="5"/>
+  <Param id="fx_delay_time" value="250"/>
+  <Param id="fx_delay_feedback" value="0.3"/>
+  <Param id="fx_delay_pingpong" value="0"/>
+  <Param id="fx_delay_damp" value="0.4"/>
+  <Param id="fx_delay_lowcut" value="150"/>
+  <Param id="fx_delay_duck" value="0.4"/>
+  <Param id="fx_delay_mix" value="0.15"/>
+  <Param id="fx_reverb_on" value="0"/>
+  <Param id="fx_reverb_mode" value="0"/>
+  <Param id="fx_reverb_size" value="0.3"/>
+  <Param id="fx_reverb_decay" value="0.8"/>
+  <Param id="fx_reverb_damp" value="0.5"/>
+  <Param id="fx_reverb_predelay" value="0.01"/>
+  <Param id="fx_reverb_lowcut" value="200"/>
+  <Param id="fx_reverb_width" value="1"/>
+  <Param id="fx_reverb_duck" value="0.3"/>
+  <Param id="fx_reverb_mix" value="0.2"/>
+  <Param id="fx_width_on" value="0"/>
+  <Param id="fx_width_amount" value="1"/>
+  <Param id="fx_width_mono" value="120"/>
+  <Param id="fx_out_on" value="1"/>
+  <Param id="fx_out_mode" value="1"/>
+  <Param id="fx_out_drive" value="5"/>
+  <Param id="fx_out_ceiling" value="-0.3"/>
   <Envelopes>
     <Env id="body_amp" points="0.00000:1.0000:0.000 0.40000:0.8500:0.100 0.65000:0.0000:0.500"/>
     <Env id="pitch" points="0.00000:1.0000:0.000 0.02000:0.3500:0.800 0.08000:0.0000:0.480"/>

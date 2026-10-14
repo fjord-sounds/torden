@@ -116,7 +116,7 @@ function hero(theme) {
     <div class="tag">Kicks, built from thunder.<br>Drawn, shaped, synthesized.</div>
     <div class="facts">
       <b>4</b> layers · <b>7</b> drawable envelopes<br>
-      <b>10</b> effects · step sequencer<br>
+      <b>15</b> effects · step sequencer<br>
       <b>${presetCount()}</b> factory presets<br>
       <b>VST3</b> · <b>AU</b> · <b>LV2</b> · standalone
     </div>

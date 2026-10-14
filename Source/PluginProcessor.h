@@ -5,13 +5,15 @@
 #include "Parameters.h"
 #include "dsp/KickEngine.h"
 #include "dsp/Analysis.h"
-#include "fx/FxChain.h"
+#include <fjord_base/fx/Chain.h>
+#include <fjord_base/fx/OrderState.h>
+#include <fjord_base/fx/ChainPresets.h>
+#include <fjord_base/plugin/PluginHelpers.h>
 #include "seq/StepSequencer.h"
 #include "state/SoundState.h"
 #include "presets/PresetManager.h"
 
-class TordenProcessor : public juce::AudioProcessor,
-                        private juce::ValueTree::Listener
+class TordenProcessor : public juce::AudioProcessor
 {
 public:
     TordenProcessor();
@@ -46,11 +48,13 @@ public:
     torden::PresetManager presetManager { apvts, &undoManager };
     juce::MidiKeyboardState keyboardState;
     torden::dsp::ScopeBuffer scope;
-    torden::fx::FxMeters fxMeters;
+    fjord::base::fx::Meters fxMeters;
+    fjord::base::fx::ChainPresets chainPresets { apvts };   // effect chains (shared by every Fjord plugin)
+    fjord::base::fx::OrderState fxOrder { apvts, &undoManager, fjord::base::fx::defaultOrder(), torden::PresetManager::normaliseOrder };
 
     // Effect order (stored in the state and in presets as "fxOrder")
-    torden::fx::Order getFxOrder() const;
-    void setFxOrder (const torden::fx::Order&);
+    fjord::base::fx::Order getFxOrder() const { return fxOrder.get(); }
+    void setFxOrder (const fjord::base::fx::Order& o) { fxOrder.set (o); }
 
     // Hit from the UI (pad, timeline click). Thread-safe.
     void triggerHit (float velocity = 1.0f, int note = -1);
@@ -75,10 +79,7 @@ public:
     double getCurrentSampleRate() const { return currentSampleRate; }
     double getBpm() const { return bpm.load(); }
 
-    std::array<float, 2> takeOutputPeaks()
-    {
-        return { outputPeak[0].exchange (0.0f, std::memory_order_relaxed), outputPeak[1].exchange (0.0f, std::memory_order_relaxed) };
-    }
+    std::array<float, 2> takeOutputPeaks() { return outputPeaks.take(); }
 
     // Current parameter values (plain) for offline renders
     torden::params::Values currentValues() const;
@@ -95,15 +96,13 @@ public:
 
 private:
     void processChunk (juce::AudioBuffer<float>&, juce::MidiBuffer&, double ppq, bool playing);
-    void valueTreePropertyChanged (juce::ValueTree&, const juce::Identifier&) override;
-    void syncFxOrderFromState();
 
     torden::params::Reader reader { apvts };
     torden::params::Values values;
     torden::dsp::KickEngine engine;
-    torden::fx::FxChain fxChain;
+    fjord::base::fx::Chain fxChain;
     torden::seq::StepSequencer sequencer;
-    std::array<std::atomic<int>, torden::fx::kNumFx> fxOrder {};
+    fjord::base::plugin::BlockSplitter splitter;
 
     static constexpr int kMaxEvents = 128;
     std::array<torden::dsp::HitEvent, kMaxEvents> events {};
@@ -116,7 +115,7 @@ private:
     std::atomic<bool> panicRequested { false }, seqRunning { false }, hostPlaying { false };
     std::atomic<int> soloMask { 0 };
     std::atomic<double> bpm { 120.0 };
-    std::array<std::atomic<float>, 2> outputPeak {};
+    fjord::base::plugin::PeakMeter outputPeaks;
     juce::SmoothedValue<float> masterGain, presetLevel;
     std::array<float, 2> dcX {}, dcY {};
     float dcCoef = 0.9995f;
