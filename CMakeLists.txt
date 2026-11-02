@@ -10,7 +10,7 @@ endif()
 
 # fjord-base: the shared code of all Fjord plugins (UI, effects, build helpers, JUCE). A checkout next to this
 # repository (../fjord-base) is used if present, otherwise the pinned release is downloaded when CMake configures.
-set(FJORD_BASE_TAG "v0.2.0")
+set(FJORD_BASE_TAG "v0.2.1")
 set(FJORD_BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../fjord-base" CACHE PATH "Local fjord-base checkout")
 if(EXISTS "${FJORD_BASE_DIR}/cmake/FjordBase.cmake")
     add_subdirectory("${FJORD_BASE_DIR}" "${CMAKE_BINARY_DIR}/fjord-base")
